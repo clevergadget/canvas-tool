@@ -1,21 +1,28 @@
 import cors from 'cors'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import { pool } from './db'
+import { notesController } from './controllers/notesController'
 
 const app = express()
 app.use(cors());
+app.use(express.json()); // Parse JSON request bodies
 
-const port = process.env.PORT || 3001
+const port: number = Number(process.env.PORT) || 3001
 
-app.get('/health', async (_req, res) => {
+app.get('/health', async (_req: Request, res: Response): Promise<void> => {
   try {
     await pool.query('SELECT 1')
     res.json({ status: 'ok', db: 'ok' })
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error('Health check failed:', e)
     res.status(500).json({ status: 'error', db: 'unreachable' })
   }
 })
 
-app.listen(port, () => {
+// Notes API routes
+app.get('/api/notes', (req: Request, res: Response) => notesController.getAllNotes(req, res))
+app.post('/api/notes', (req: Request, res: Response) => notesController.createNote(req, res))
+
+app.listen(port, (): void => {
   console.log(`Backend listening on port ${port}`)
 })

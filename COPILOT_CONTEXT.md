@@ -26,11 +26,13 @@ A minimal canvassing web app for Empower's take-home assignment. The app allows 
 - Document DB connection details for local development
 - Frontend health check UI displays backend and DB status
 
-### 4. Backend & Database Expansion (NEXT)
+### 4. Backend & Database Expansion (COMPLETED)
 - Design and create schema for canvassing notes
 - Implement API endpoints for adding and retrieving notes
+- Add comprehensive testing with Jest and supertest
+- Clean up duplicate test folders for clarity
 
-### 5. Frontend Feature Development
+### 5. Frontend Feature Development (NEXT)
 - Add page to submit new canvassing note (name, notes)
 - Add page to view all notes
 - Use TanStack Query for all data fetching

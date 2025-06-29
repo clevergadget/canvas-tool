@@ -47,6 +47,40 @@ docker-compose up --build
 - `npm run dev:frontend` — Start only the frontend
 - `npm run dev:backend` — Start only the backend
 
+### Database Commands (while running with Docker Compose)
+
+Connect to MySQL shell:
+```bash
+docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
+```
+
+Quick database queries:
+```bash
+# See all tables
+docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SHOW TABLES;"
+
+# View all canvassing notes
+docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SELECT * FROM canvassing_notes ORDER BY created_at DESC;"
+
+# Count total notes
+docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SELECT COUNT(*) as total_notes FROM canvassing_notes;"
+```
+
+### Testing
+
+Run backend tests:
+```bash
+cd backend
+npm test
+```
+
+Tests use Jest and supertest to validate API endpoints without hitting the real database.
+
+### API Endpoints
+- `GET /api/notes` — Get all canvassing notes
+- `POST /api/notes` — Create a new note (requires `person_name` and optional `notes`)
+- `GET /health` — Health check (backend + database status)
+
 ## What is in the current version?
 - Clean project structure with separate `frontend`, `backend`, and `database` directories
 - `.nvmrc` for consistent Node.js version (v22.12.0)
@@ -57,6 +91,9 @@ docker-compose up --build
 - **Backend:**
   - TypeScript Express server with a `/health` endpoint returning backend and DB status
   - MySQL connection (local via Docker Compose)
+  - REST API endpoints for canvassing notes (`GET /api/notes`, `POST /api/notes`)
+  - Professional service/controller architecture with TypeScript types
+  - Comprehensive test suite using Jest and supertest (mocked DB calls)
   - Standard scripts for development and build
 - **Database:**
   - MySQL schema/init script for local development
