@@ -12,8 +12,31 @@ A minimal canvassing web app for Empower's take-home assignment.
 - `./backend` — Node.js Express API (TypeScript, minimal, with health check)
 - `./database` — SQL schema, migration scripts, and DB docs (to be added)
 
-## What is in the first commit?
-This initial commit includes:
+## Running Locally
+
+### Prerequisites
+- Node.js v22+ (see `.nvmrc`)
+- npm v10+
+
+### Quick Start
+From the project root, run:
+
+```bash
+npm install
+npm run dev
+```
+
+This will start both the frontend (on port 5173) and backend (on port 3001) in parallel.
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3001
+
+### Scripts
+- `npm run dev` — Start both frontend and backend
+- `npm run dev:frontend` — Start only the frontend
+- `npm run dev:backend` — Start only the backend
+
+## What is in the current version?
 - Clean project structure with separate `frontend` and `backend` directories
 - `.nvmrc` for consistent Node.js version (v22.12.0)
 - **Frontend:**
@@ -35,9 +58,6 @@ See `COPILOT_CONTEXT.md` for a sequenced, AI-assisted plan and context.
 
 ## AI Assistance
 This project is developed in partnership with GitHub Copilot (AI), as permitted by the assignment. All code is written for clarity, simplicity, and maintainability for future developers.
-
-## Getting Started
-Instructions for setup and running the app will be added as development progresses.
 
 ---
 
