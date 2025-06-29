@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:3001
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: canvassing
+      MYSQL_USER: canvasser
+      MYSQL_PASSWORD: canvasserpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/docker-mysql-init.sql:/docker-entrypoint-initdb.d/init.sql

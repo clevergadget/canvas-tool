@@ -23,12 +23,21 @@ function App() {
       {isLoading && <Spinner size="lg" color="teal.500" />}
       {!isLoading && isError && (
         <Box mt={4} maxW="sm" bg="red.100" color="red.800" p={4} borderRadius="md">
-          Could not reach backend health check.
+          Could not reach backend or database.
         </Box>
       )}
       {!isLoading && !isError && data && (
-        <Box mt={4} maxW="sm" bg="green.100" color="green.800" p={4} borderRadius="md">
+        <Box
+          mt={4}
+          maxW="sm"
+          bg={data.db === 'ok' ? 'green.100' : 'yellow.100'}
+          color={data.db === 'ok' ? 'green.800' : 'yellow.800'}
+          p={4}
+          borderRadius="md"
+        >
           Backend health: <b>{data.status}</b>
+          <br />
+          Database: <b>{data.db}</b>
         </Box>
       )}
     </Box>
