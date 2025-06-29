@@ -4,7 +4,13 @@
   "description": "A minimal canvassing web app for Empower's take-home assignment.",
   "main": "index.js",
   "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "repository": {
     "type": "git",

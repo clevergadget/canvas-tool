@@ -1,6 +1,9 @@
+import cors from 'cors'
 import express from 'express'
 
 const app = express()
+app.use(cors());
+
 const port = process.env.PORT || 3001
 
 app.get('/health', (_req, res) => {

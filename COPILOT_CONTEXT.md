@@ -14,28 +14,35 @@ A minimal canvassing web app for Empower's take-home assignment. The app allows 
 - Confirm frontend and backend run independently and are ready for integration
 - All code is minimal, clear, and reviewer-friendly
 
-### 2. Deployment & Database Setup (NEXT)
+### 2. Local Development & Integration (NEXT)
+- Add scripts and documentation for running frontend and backend together locally
+- Ensure the frontend calls and displays the backend health check endpoint
+- Make local development as easy and reliable as possible for any reviewer
+
+### 3. Deployment & Database Setup
 - Set up AWS RDS MySQL instance
 - Prepare Docker or other deployment scripts for backend and frontend
 - Deploy backend and frontend containers, connect to RDS
 - Confirm end-to-end connectivity in deployed environment
 
-### 3. Backend & Database Expansion
+### 4. Backend & Database Expansion
 - Design and create schema for canvassing notes
 - Implement API endpoints for adding and retrieving notes
 
-### 4. Frontend Feature Development
+### 5. Frontend Feature Development
 - Add page to submit new canvassing note (name, notes)
 - Add page to view all notes
 - Use TanStack Query for all data fetching
 - Use Chakra UI for all UI components
 
-### 5. Documentation and Cleanup
+### 6. Documentation and Cleanup
 - Update README with setup, deployment, and usage instructions
 - Ensure code is clean, simple, and well-commented
 - Prioritize digestible, readable code for the reviewing developer: clear naming, concise functions, and helpful comments
 
 ## Workflow and Priorities
+- 1. Easy to run locally
+- 2. Easy to deploy
 - Work in small, clear, incremental steps
 - Make frequent, descriptive commits
 - Prioritize clarity, simplicity, and code readability for reviewers
