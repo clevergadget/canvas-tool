@@ -5,7 +5,7 @@ A minimal canvassing web app for Empower's take-home assignment.
 ## Tech Stack
 - **Frontend:** Vite + React + TypeScript + Chakra UI + TanStack Query
 - **Backend:** Node.js (Express, TypeScript)
-- **Database:** MySQL (local via Docker Compose; AWS RDS planned)
+- **Database:** MySQL (local via Docker Compose)
 
 ## Project Structure
 - `./frontend` — Vite React app (mobile-friendly, Chakra UI, minimal boilerplate)
@@ -46,10 +46,6 @@ docker-compose up --build
 - `npm run dev` — Start both frontend and backend
 - `npm run dev:frontend` — Start only the frontend
 - `npm run dev:backend` — Start only the backend
-
-## Deployment
-
-Deployment to AWS is not currently configured. Previous AWS Copilot/ECS setup has been removed for clarity and simplicity. To deploy, you may use Docker images and your preferred cloud/container platform. (See `COPILOT_CONTEXT.md` for deployment planning and rationale.)
 
 ## What is in the current version?
 - Clean project structure with separate `frontend`, `backend`, and `database` directories
