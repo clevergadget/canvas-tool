@@ -1,7 +1,7 @@
 # Copilot Context: Canvas Tool Project
 
 ## Project Overview
-A minimal canvassing web app for Empower's take-home assignment. The app allows a canvasser to record a person's name and free-form notes, and view all canvassing notes. Built with Vite + React (frontend), Chakra UI (mobile-friendly UI), TanStack Query (data fetching), Node.js (Express, backend), and AWS RDS MySQL (database). Uses TypeScript primarily, with some JavaScript where expedient.
+A minimal canvassing web app for Empower's take-home assignment. The app allows a canvasser to record a person's name and free-form notes, and view all canvassing notes. Built with Vite + React (frontend), Chakra UI (mobile-friendly UI), TanStack Query (data fetching), Node.js (Express, backend), and MySQL (local via Docker Compose; AWS RDS planned). Uses TypeScript primarily, with some JavaScript where expedient.
 
 ## Updated Sequenced Plan
 
@@ -10,7 +10,7 @@ A minimal canvassing web app for Empower's take-home assignment. The app allows 
 - Scaffold backend (`./backend`: Node.js + Express, TypeScript)
 - Scaffold frontend (`./frontend`: Vite + React, TypeScript, Chakra UI, TanStack Query)
 - Remove all default Vite/React boilerplate and graphics
-- Implement a health check endpoint in backend that returns `{ status: 'ok' }`
+- Implement a health check endpoint in backend that returns backend and DB status
 - Confirm frontend and backend run independently and are ready for integration
 - All code is minimal, clear, and reviewer-friendly
 
@@ -19,19 +19,19 @@ A minimal canvassing web app for Empower's take-home assignment. The app allows 
 - Ensure the frontend calls and displays the backend health check endpoint
 - Make local development as easy and reliable as possible for any reviewer
 
-### 3. Local Database Integration (IN PROGRESS)
+### 3. Local Database Integration (COMPLETED)
 - Add a MySQL service to `docker-compose.yml` for local development
 - Provide an init script for schema setup
 - Ensure backend can connect to local MySQL
 - Document DB connection details for local and AWS
+- Frontend health check UI displays backend and DB status
 
-### 4. Deployment & Database Setup
-- Set up AWS RDS MySQL instance
-- Prepare Docker or other deployment scripts for backend and frontend
-- Deploy backend and frontend containers, connect to RDS
-- Confirm end-to-end connectivity in deployed environment
+### 4. AWS Deployment (REMOVED/PAUSED)
+- AWS Copilot CLI and ECS Fargate deployment were attempted, but removed for reviewer clarity and simplicity
+- All Copilot manifests and CLI tools have been uninstalled and deleted
+- Deployment is now left open for future Docker-based or cloud deployment (see README)
 
-### 5. Backend & Database Expansion
+### 5. Backend & Database Expansion (NEXT)
 - Design and create schema for canvassing notes
 - Implement API endpoints for adding and retrieving notes
 
@@ -41,14 +41,15 @@ A minimal canvassing web app for Empower's take-home assignment. The app allows 
 - Use TanStack Query for all data fetching
 - Use Chakra UI for all UI components
 
-### 7. Documentation and Cleanup
+### 7. Documentation and Cleanup (ONGOING)
 - Update README with setup, deployment, and usage instructions
 - Ensure code is clean, simple, and well-commented
 - Prioritize digestible, readable code for the reviewing developer: clear naming, concise functions, and helpful comments
+- Keep this file up to date with major project changes
 
 ## Workflow and Priorities
 - 1. Easy to run locally
-- 2. Easy to deploy
+- 2. Easy to deploy (future-proofed, but not Copilot/ECS-specific)
 - Work in small, clear, incremental steps
 - Make frequent, descriptive commits
 - Prioritize clarity, simplicity, and code readability for reviewers
