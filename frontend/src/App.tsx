@@ -21,12 +21,12 @@ function App() {
         Welcome! This project uses Vite, React, Chakra UI, and TanStack Query.
       </Text>
       {isLoading && <Spinner size="lg" color="teal.500" />}
-      {isError && (
+      {!isLoading && isError && (
         <Box mt={4} maxW="sm" bg="red.100" color="red.800" p={4} borderRadius="md">
           Could not reach backend health check.
         </Box>
       )}
-      {data && (
+      {!isLoading && !isError && data && (
         <Box mt={4} maxW="sm" bg="green.100" color="green.800" p={4} borderRadius="md">
           Backend health: <b>{data.status}</b>
         </Box>
