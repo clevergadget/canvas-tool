@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Navigation from './components/Navigation'
-import AddNote from './pages/AddNote'
-import ViewNotes from './pages/ViewNotes'
+import AddPerson from './pages/AddPerson'
+import ViewPeople from './pages/ViewPeople'
 import { system } from './theme'
 import type { ReactElement } from 'react'
 
@@ -17,8 +17,8 @@ function App(): ReactElement {
           <Navigation />
           <Routes>
             <Route path="/" element={<Navigate to="/add" replace />} />
-            <Route path="/add" element={<AddNote />} />
-            <Route path="/view" element={<ViewNotes />} />
+            <Route path="/add" element={<AddPerson />} />
+            <Route path="/view" element={<ViewPeople />} />
           </Routes>
         </Router>
       </QueryClientProvider>

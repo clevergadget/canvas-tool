@@ -49,12 +49,14 @@ describe('Notes API', () => {
     it('should create a note with valid data', async () => {
       const noteData = {
         person_name: 'Test Person',
+        email: 'test@example.com',
         notes: 'Test notes'
       };
 
       const mockNote = {
         id: 1,
         person_name: 'Test Person',
+        email: 'test@example.com',
         notes: 'Test notes',
         created_at: '2023-01-01T00:00:00.000Z',
         updated_at: '2023-01-01T00:00:00.000Z'
@@ -77,7 +79,7 @@ describe('Notes API', () => {
     it('should reject note without person_name', async () => {
       const response = await request(app)
         .post('/api/notes')
-        .send({ notes: 'Test notes' })
+        .send({ email: 'test@example.com', notes: 'Test notes' })
         .expect(400);
 
       expect(response.body).toEqual({

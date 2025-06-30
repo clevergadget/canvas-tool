@@ -21,7 +21,7 @@ export class NotesController {
 
   async createNote(req: Request, res: Response): Promise<void> {
     try {
-      const { person_name, notes }: CreateNoteRequest = req.body;
+      const { person_name, notes, email }: CreateNoteRequest = req.body;
 
       // Basic validation
       if (!person_name) {
@@ -32,7 +32,7 @@ export class NotesController {
         return;
       }
 
-      const newNote = await notesService.createNote({ person_name, notes });
+      const newNote = await notesService.createNote({ person_name, notes, email });
       res.status(201).json({
         success: true,
         data: newNote

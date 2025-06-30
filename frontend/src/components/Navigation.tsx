@@ -16,7 +16,7 @@ export default function Navigation(): ReactElement {
       <Container maxW="4xl">
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Heading as="h1" size="lg" color="white">
-            Canvassing Notes
+            Canvassing Tracker
           </Heading>
           
           <HStack gap={4}>
@@ -32,7 +32,7 @@ export default function Navigation(): ReactElement {
                 }}
                 size="sm"
               >
-                Add Note
+                Add Person
               </Button>
             </Link>
             
@@ -48,7 +48,7 @@ export default function Navigation(): ReactElement {
                 }}
                 size="sm"
               >
-                View Notes
+                View People
               </Button>
             </Link>
           </HStack>

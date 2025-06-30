@@ -12,32 +12,37 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import type { ReactElement, FormEvent, ChangeEvent } from 'react'
 
-interface NoteData {
+interface PersonData {
   person_name: string
   notes?: string
+  email?: string
 }
 
-export default function AddNote(): ReactElement {
+export default function AddPerson(): ReactElement {
   const [personName, setPersonName] = useState<string>('')
   const [notes, setNotes] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [emailError, setEmailError] = useState<string>('')
 
-  // Mutation for creating a new canvassing note
-  const createNoteMutation = useMutation({
-    mutationFn: async (noteData: NoteData) => {
+  // Mutation for adding a person to canvassing records
+  const addPersonMutation = useMutation({
+    mutationFn: async (personData: PersonData) => {
       const res = await fetch('http://localhost:3001/api/notes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(noteData),
+        body: JSON.stringify(personData),
       })
-      if (!res.ok) throw new Error('Failed to create note')
+      if (!res.ok) throw new Error('Failed to add person')
       return res.json()
     },
     onSuccess: () => {
       // Clear form after successful submission
       setPersonName('')
       setNotes('')
+      setEmail('')
+      setEmailError('')
     },
   })
 
@@ -45,10 +50,22 @@ export default function AddNote(): ReactElement {
     e.preventDefault()
     if (!personName.trim()) return
 
-    createNoteMutation.mutate({
+    // Validate email if provided
+    if (email.trim() && !isValidEmail(email.trim())) {
+      setEmailError('Please enter a valid email address')
+      return
+    }
+
+    addPersonMutation.mutate({
       person_name: personName.trim(),
       notes: notes.trim() || undefined,
+      email: email.trim() || undefined,
     })
+  }
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
   }
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -57,6 +74,15 @@ export default function AddNote(): ReactElement {
 
   const handleNotesChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     setNotes(e.target.value)
+  }
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value
+    setEmail(value)
+    // Clear error when user starts typing
+    if (emailError) {
+      setEmailError('')
+    }
   }
 
   return (
@@ -78,9 +104,27 @@ export default function AddNote(): ReactElement {
                 value={personName}
                 onChange={handleNameChange}
                 placeholder="Enter the person's full name"
-                disabled={createNoteMutation.isPending}
+                disabled={addPersonMutation.isPending}
                 required
               />
+            </Box>
+
+            <Box w="100%">
+              <Text mb={2} fontWeight="medium">
+                Email
+              </Text>
+              <Input
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                placeholder="Enter email address (optional)"
+                disabled={addPersonMutation.isPending}
+              />
+              {emailError && (
+                <Text color="red.500" fontSize="sm" mt={1}>
+                  {emailError}
+                </Text>
+              )}
             </Box>
 
             <Box w="100%">
@@ -92,7 +136,7 @@ export default function AddNote(): ReactElement {
                 onChange={handleNotesChange}
                 placeholder="Any notes about the conversation..."
                 rows={4}
-                disabled={createNoteMutation.isPending}
+                disabled={addPersonMutation.isPending}
               />
             </Box>
 
@@ -100,18 +144,18 @@ export default function AddNote(): ReactElement {
               type="submit"
               colorScheme="brand"
               size="lg"
-              loading={createNoteMutation.isPending}
+              loading={addPersonMutation.isPending}
               loadingText="Saving..."
               disabled={!personName.trim()}
               w="100%"
             >
-              Save Note
+              Add Person
             </Button>
           </VStack>
         </Card.Root>
 
         {/* Success message */}
-        {createNoteMutation.isSuccess && (
+        {addPersonMutation.isSuccess && (
           <Box 
             bg="green.50" 
             color="green.700" 
@@ -122,12 +166,12 @@ export default function AddNote(): ReactElement {
             w="100%"
             textAlign="center"
           >
-            ✓ Note saved successfully! Ready for the next person.
+            ✓ Person added successfully! Ready for the next person.
           </Box>
         )}
 
         {/* Error message */}
-        {createNoteMutation.isError && (
+        {addPersonMutation.isError && (
           <Box 
             bg="red.50" 
             color="red.700" 
@@ -138,7 +182,7 @@ export default function AddNote(): ReactElement {
             w="100%"
             textAlign="center"
           >
-            ✗ Failed to save note. Please try again.
+            ✗ Failed to add person. Please try again.
           </Box>
         )}
       </VStack>
