@@ -47,32 +47,48 @@ docker-compose up --build
 - `npm run dev:frontend` — Start only the frontend
 - `npm run dev:backend` — Start only the backend
 
+### Database Commands (while running with Docker Compose)
+
+Connect to MySQL shell:
+```bash
+docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
+```
+
+### Testing
+
+Run backend tests:
+```bash
+cd backend
+npm test
+```
+
+Tests use Jest and supertest to validate API endpoints.
+
+### API Endpoints
+- `GET /api/notes` — Get all canvassing notes
+- `POST /api/notes` — Create a new note (requires `person_name` and optional `notes`)
+- `GET /health` — Health check (backend + database status)
+
 ## What is in the current version?
 - Clean project structure with separate `frontend`, `backend`, and `database` directories
 - `.nvmrc` for consistent Node.js version (v22.12.0)
 - **Frontend:**
-  - Vite + React + TypeScript app, stripped of all default boilerplate and graphics
-  - Chakra UI and TanStack Query set up and ready for use
-  - Minimal, readable health check UI (shows backend and DB status)
+  - Vite + React + TypeScript app
+  - Chakra UI with custom theme
+  - TanStack Query for data fetching
+  - Canvassing note management: add notes form and view all notes page
+  - React Router DOM for navigation
+  - Responsive design
 - **Backend:**
-  - TypeScript Express server with a `/health` endpoint returning backend and DB status
-  - MySQL connection (local via Docker Compose)
-  - Standard scripts for development and build
+  - Express server with health check endpoint
+  - MySQL connection via Docker Compose
+  - REST API endpoints for canvassing notes (`GET /api/notes`, `POST /api/notes`)
+  - TypeScript throughout
+  - Test suite using Jest
 - **Database:**
-  - MySQL schema/init script for local development
-- All code is intentionally minimal, clear, and reviewer-friendly, with no unnecessary extras
-
-## Why this approach?
-- To provide a clean, professional starting point for full-stack development
-- To make the codebase as readable and approachable as possible for the reviewer
-- To ensure all infrastructure is working before adding features
-
-## Development Plan
-See `COPILOT_CONTEXT.md` for a sequenced, AI-assisted plan and context.
+  - MySQL schema and init script
+  - Canvassing notes table
+- Clean, readable code focused on the core requirements
 
 ## AI Assistance
-This project is developed in partnership with GitHub Copilot (AI), as permitted by the assignment. All code is written for clarity, simplicity, and maintainability for future developers.
-
----
-
-For any questions, please contact Phillip Dodson.
+This project is developed with GitHub Copilot assistance, as permitted by the assignment.

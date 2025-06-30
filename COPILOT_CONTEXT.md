@@ -1,58 +1,46 @@
 # Copilot Context: Canvas Tool Project
 
 ## Project Overview
-A minimal canvassing web app for Empower's take-home assignment. The app allows a canvasser to record a person's name and free-form notes, and view all canvassing notes. Built with Vite + React (frontend), Chakra UI (mobile-friendly UI), TanStack Query (data fetching), Node.js (Express, backend), and MySQL (local via Docker Compose). Uses TypeScript primarily, with some JavaScript where expedient.
+A canvassing web app for Empower's take-home assignment. Allows canvassers to record names and notes, and view all canvassing notes. Built with React frontend, Node.js backend, and MySQL database.
 
-## Updated Sequenced Plan
+## Development Plan
 
-### 1. Local Infrastructure & Project Scaffold (COMPLETED)
-- Set up `.nvmrc` for Node.js version consistency
-- Scaffold backend (`./backend`: Node.js + Express, TypeScript)
-- Scaffold frontend (`./frontend`: Vite + React, TypeScript, Chakra UI, TanStack Query)
-- Remove all default Vite/React boilerplate and graphics
-- Implement a health check endpoint in backend that returns backend and DB status
-- Confirm frontend and backend run independently and are ready for integration
-- All code is minimal, clear, and reviewer-friendly
+### 1. Infrastructure & Scaffold (COMPLETED)
+- Set up Node.js project structure
+- Backend: Express + TypeScript
+- Frontend: Vite + React + TypeScript + Chakra UI + TanStack Query
+- Health check endpoint
+- Remove default boilerplate
 
-### 2. Local Development & Integration (COMPLETED)
-- Add scripts and documentation for running frontend and backend together locally
-- Ensure the frontend calls and displays the backend health check endpoint
-- Make local development as easy and reliable as possible for any reviewer
+### 2. Local Development Setup (COMPLETED)
+- Scripts for running frontend and backend together
+- Documentation for local development
+- Health check UI showing backend and DB status
 
-### 3. Local Database Integration (COMPLETED)
-- Add a MySQL service to `docker-compose.yml` for local development
-- Provide an init script for schema setup
-- Ensure backend can connect to local MySQL
-- Document DB connection details for local development
-- Frontend health check UI displays backend and DB status
+### 3. Database Integration (COMPLETED)
+- MySQL service in Docker Compose
+- Schema and init scripts
+- Backend database connection
 
-### 4. Backend & Database Expansion (NEXT)
-- Design and create schema for canvassing notes
-- Implement API endpoints for adding and retrieving notes
+### 4. API Development (COMPLETED)
+- Canvassing notes schema
+- REST endpoints for notes (GET, POST)
+- Backend testing with Jest
 
-### 5. Frontend Feature Development
-- Add page to submit new canvassing note (name, notes)
-- Add page to view all notes
-- Use TanStack Query for all data fetching
-- Use Chakra UI for all UI components
+### 5. Frontend Features (COMPLETED)
+- Add note page (name + notes form)
+- View notes page
+- TanStack Query for data fetching
+- Chakra UI theming
+- React Router navigation
 
-### 6. Documentation and Cleanup (ONGOING)
-- Update README with setup and usage instructions
-- Ensure code is clean, simple, and well-commented
-- Prioritize digestible, readable code for the reviewing developer: clear naming, concise functions, and helpful comments
-- Keep this file up to date with major project changes
+### 6. Documentation (COMPLETED)
+- README with setup instructions
+- Clear, readable code
+- Project documentation
 
-## Workflow and Priorities
-- 1. Easy to run locally
-- Work in small, clear, incremental steps
-- Make frequent, descriptive commits
-- Prioritize clarity, simplicity, and code readability for reviewers
-- Always use relative paths from the project root
-- Pause often to check in and discuss next steps
-
----
-
-This file is for both human and AI reference. Update as needed to reflect changes in plan or priorities.
+## Current Status
+All core requirements met. App is functional and ready for review.
 
 
 Assignment 
