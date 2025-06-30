@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { notesService, CreateNoteRequest, UpdateNoteRequest } from '../services/notesService';
+import { notesService, CreateNoteRequest, UpdateNoteRequest, SearchNotesRequest } from '../services/notesService';
 
 export class NotesController {
   async getAllNotes(req: Request, res: Response): Promise<void> {
@@ -136,6 +136,47 @@ export class NotesController {
       res.status(500).json({
         success: false,
         error: 'Failed to export CSV'
+      });
+    }
+  }
+
+  async searchNotes(req: Request, res: Response): Promise<void> {
+    try {
+      const { query, page, limit } = req.query;
+      
+      const searchParams: SearchNotesRequest = {
+        query: query as string,
+        page: page ? parseInt(page as string) : undefined,
+        limit: limit ? parseInt(limit as string) : undefined
+      };
+
+      // Validate pagination parameters
+      if (searchParams.page && searchParams.page < 1) {
+        res.status(400).json({
+          success: false,
+          error: 'Page must be greater than 0'
+        });
+        return;
+      }
+
+      if (searchParams.limit && (searchParams.limit < 1 || searchParams.limit > 100)) {
+        res.status(400).json({
+          success: false,
+          error: 'Limit must be between 1 and 100'
+        });
+        return;
+      }
+
+      const result = await notesService.searchNotes(searchParams);
+      res.json({
+        success: true,
+        ...result
+      });
+    } catch (error) {
+      console.error('Error in searchNotes:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search notes'
       });
     }
   }
