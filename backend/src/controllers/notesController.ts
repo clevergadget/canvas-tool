@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
-import { notesService, CreateNoteRequest, UpdateNoteRequest, SearchNotesRequest } from '../services/notesService';
+import { notesService } from '../services/notesService';
+import type {
+  CreatePersonRequest,
+  UpdatePersonNotesRequest,
+  SearchPeopleRequest
+} from '@voter-canvassing-tool/shared-types';
 
 export class NotesController {
   async getAllNotes(req: Request, res: Response): Promise<void> {
@@ -21,7 +26,7 @@ export class NotesController {
 
   async createNote(req: Request, res: Response): Promise<void> {
     try {
-      const { person_name, notes, email }: CreateNoteRequest = req.body;
+      const { person_name, notes, email }: CreatePersonRequest = req.body;
 
       // Basic validation
       if (!person_name) {
@@ -57,7 +62,7 @@ export class NotesController {
   async updateNote(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
-      const { notes }: { notes: string } = req.body;
+      const { notes }: UpdatePersonNotesRequest = req.body;
 
       if (isNaN(id)) {
         res.status(400).json({
@@ -144,7 +149,7 @@ export class NotesController {
     try {
       const { query, page, limit } = req.query;
       
-      const searchParams: SearchNotesRequest = {
+      const searchParams: SearchPeopleRequest = {
         query: query as string,
         page: page ? parseInt(page as string) : undefined,
         limit: limit ? parseInt(limit as string) : undefined

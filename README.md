@@ -32,11 +32,32 @@ This will start both the frontend (on port 5173) and backend (on port 3001) in p
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
 
-To run the full stack (frontend, backend, and MySQL database) with Docker Compose:
+To run the full stack (frontend, backend, and MySQL database) with Docker Compose and seed the database in one command:
+
+```bash
+npm run setup
+```
+
+This will:
+1. Install dependencies
+2. Build and start all Docker containers
+3. Wait for the database to be ready
+4. Seed the database with sample data
+5. Display success message with access URLs
+
+Alternatively, you can manually run the full stack with Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
+
+When you're done, you can clean up all Docker containers with:
+
+```bash
+npm run cleanup
+```
+
+This will stop and remove all Docker containers created for this project.
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
@@ -48,6 +69,8 @@ docker-compose up --build
 - `npm run dev:backend` — Start only the backend
 - `npm test` — Run backend tests
 - `npm run seed-db` — Seed the database with sample data
+- `npm run setup` — One-command setup: installs dependencies, starts all containers, and seeds the database
+- `npm run cleanup` — Stop and remove all Docker containers
 
 ### Database Commands (while running with Docker Compose)
 

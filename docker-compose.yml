@@ -2,7 +2,8 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: ./frontend/Dockerfile
     ports:
       - "5173:80"
     depends_on:
@@ -11,7 +12,8 @@ services:
       - VITE_API_URL=http://localhost:3001
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: ./backend/Dockerfile
     ports:
       - "3001:3001"
     environment:
@@ -19,7 +21,7 @@ services:
     depends_on:
       - db
   db:
-    image: mysql:8.4
+    image: mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: example
@@ -28,5 +30,7 @@ services:
       MYSQL_PASSWORD: canvasserpass
     ports:
       - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./database/docker-mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/seed.sql

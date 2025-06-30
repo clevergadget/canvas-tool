@@ -1,53 +1,27 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../db';
-
-export interface CanvassingNote {
-  id: number;
-  person_name: string;
-  email?: string;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateNoteRequest {
-  person_name: string;
-  email?: string;
-  notes: string;
-}
-
-export interface UpdateNoteRequest {
-  notes: string;
-}
-
-export interface SearchNotesRequest {
-  query?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface PaginatedNotesResponse {
-  data: CanvassingNote[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import type {
+  Person,
+  CreatePersonRequest,
+  UpdatePersonNotesRequest,
+  SearchPeopleRequest,
+  PaginatedPeopleData
+} from '@voter-canvassing-tool/shared-types';
 
 export class NotesService {
-  async getAllNotes(): Promise<CanvassingNote[]> {
+  async getAllNotes(): Promise<Person[]> {
     try {
       const [rows] = await pool.execute<RowDataPacket[]>(
         'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes ORDER BY created_at DESC'
       );
-      return rows as CanvassingNote[];
+      return rows as Person[];
     } catch (error) {
       console.error('Error fetching notes:', error);
       throw new Error('Failed to fetch notes');
     }
   }
 
-  async createNote(noteData: CreateNoteRequest): Promise<CanvassingNote> {
+  async createNote(noteData: CreatePersonRequest): Promise<Person> {
     try {
       const { person_name, email, notes } = noteData;
       
@@ -72,14 +46,14 @@ export class NotesService {
         [result.insertId]
       );
 
-      return rows[0] as CanvassingNote;
+      return rows[0] as Person;
     } catch (error) {
       console.error('Error creating note:', error);
       throw error;
     }
   }
 
-  async updateNote(id: number, noteData: UpdateNoteRequest): Promise<CanvassingNote> {
+  async updateNote(id: number, noteData: UpdatePersonNotesRequest): Promise<Person> {
     try {
       const { notes } = noteData;
       
@@ -93,7 +67,7 @@ export class NotesService {
         throw new Error('Note not found');
       }
 
-      const existingNote = existingRows[0] as CanvassingNote;
+      const existingNote = existingRows[0] as Person;
 
       // Only update the notes field, preserve original person_name and email
       const [result] = await pool.execute<ResultSetHeader>(
@@ -111,7 +85,7 @@ export class NotesService {
         [id]
       );
 
-      return rows[0] as CanvassingNote;
+      return rows[0] as Person;
     } catch (error) {
       console.error('Error updating note:', error);
       throw error;
@@ -119,8 +93,8 @@ export class NotesService {
   }
 
   async searchNotes(
-    searchParams: SearchNotesRequest = {}
-  ): Promise<PaginatedNotesResponse> {
+    searchParams: SearchPeopleRequest = {}
+  ): Promise<PaginatedPeopleData> {
     try {
       const { query = '', page = 1, limit = 10 } = searchParams;
       const offset = (page - 1) * limit;
@@ -148,7 +122,7 @@ export class NotesService {
       const totalPages = Math.ceil(total / limit);
 
       return {
-        data: dataRows as CanvassingNote[],
+        data: dataRows as Person[],
         total,
         page,
         limit,

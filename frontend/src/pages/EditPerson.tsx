@@ -14,24 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import type { ReactElement } from 'react'
-
-interface CanvassingNote {
-  id: number
-  person_name: string
-  email?: string
-  notes: string
-  created_at: string
-  updated_at: string
-}
-
-interface NotesResponse {
-  success: boolean
-  data: CanvassingNote[]
-}
-
-interface UpdateNoteRequest {
-  notes: string
-}
+import type { Person, PeopleResponse, UpdatePersonNotesRequest } from '@voter-canvassing-tool/shared-types'
 
 export default function EditPerson(): ReactElement {
   const { id } = useParams<{ id: string }>()
@@ -43,9 +26,9 @@ export default function EditPerson(): ReactElement {
   const [notes, setNotes] = useState('')
 
   // Fetch all notes to find the one we're editing
-  const { data, isLoading } = useQuery<NotesResponse>({
+  const { data, isLoading } = useQuery<PeopleResponse>({
     queryKey: ['notes'],
-    queryFn: async (): Promise<NotesResponse> => {
+    queryFn: async (): Promise<PeopleResponse> => {
       const res = await fetch('http://localhost:3001/api/notes')
       if (!res.ok) throw new Error('Failed to fetch notes')
       return res.json()
@@ -53,7 +36,7 @@ export default function EditPerson(): ReactElement {
   })
 
   // Find the note we're editing
-  const noteToEdit = data?.data?.find(note => note.id === parseInt(id || ''))
+  const noteToEdit = data?.data?.find((note: Person) => note.id === parseInt(id || ''))
 
   // Update form fields when data loads
   useEffect(() => {
@@ -66,7 +49,7 @@ export default function EditPerson(): ReactElement {
 
   // Mutation for updating the note
   const updateMutation = useMutation({
-    mutationFn: async (data: UpdateNoteRequest) => {
+    mutationFn: async (data: UpdatePersonNotesRequest) => {
       const res = await fetch(`http://localhost:3001/api/notes/${id}`, {
         method: 'PUT',
         headers: {

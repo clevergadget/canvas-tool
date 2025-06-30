@@ -11,12 +11,7 @@ import {
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import type { ReactElement, FormEvent, ChangeEvent } from 'react'
-
-interface PersonData {
-  person_name: string
-  notes?: string
-  email?: string
-}
+import type { CreatePersonRequest } from '@voter-canvassing-tool/shared-types'
 
 export default function AddPerson(): ReactElement {
   const [personName, setPersonName] = useState<string>('')
@@ -26,7 +21,7 @@ export default function AddPerson(): ReactElement {
 
   // Mutation for adding a person to canvassing records
   const addPersonMutation = useMutation({
-    mutationFn: async (personData: PersonData) => {
+    mutationFn: async (personData: CreatePersonRequest) => {
       const res = await fetch('http://localhost:3001/api/notes', {
         method: 'POST',
         headers: {
