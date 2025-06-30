@@ -1,4 +1,3 @@
-// Empower Project inspired color palette
 // Based on their CSS variables: --accent-hsl: 187.06, 100%, 50%; --lightAccent-hsl: 253.13, 100%, 60.59%; etc.
 
 export const colors = {
