@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Navigation from './components/Navigation'
 import AddPerson from './pages/AddPerson'
 import ViewPeople from './pages/ViewPeople'
+import EditPerson from './pages/EditPerson'
 import { system } from './theme'
 import type { ReactElement } from 'react'
 
@@ -19,6 +20,7 @@ function App(): ReactElement {
             <Route path="/" element={<Navigate to="/add" replace />} />
             <Route path="/add" element={<AddPerson />} />
             <Route path="/view" element={<ViewPeople />} />
+            <Route path="/edit/:id" element={<EditPerson />} />
           </Routes>
         </Router>
       </QueryClientProvider>

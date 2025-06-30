@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { notesService, CreateNoteRequest } from '../services/notesService';
+import { notesService, CreateNoteRequest, UpdateNoteRequest } from '../services/notesService';
 
 export class NotesController {
   async getAllNotes(req: Request, res: Response): Promise<void> {
@@ -49,6 +49,49 @@ export class NotesController {
         res.status(500).json({
           success: false,
           error: 'Failed to create note'
+        });
+      }
+    }
+  }
+
+  async updateNote(req: Request, res: Response): Promise<void> {
+    try {
+      const id = parseInt(req.params.id);
+      const { notes }: { notes: string } = req.body;
+
+      if (isNaN(id)) {
+        res.status(400).json({
+          success: false,
+          error: 'Invalid note ID'
+        });
+        return;
+      }
+
+      if (notes === undefined) {
+        res.status(400).json({
+          success: false,
+          error: 'Notes field is required'
+        });
+        return;
+      }
+
+      const updatedNote = await notesService.updateNote(id, { notes });
+      res.json({
+        success: true,
+        data: updatedNote
+      });
+    } catch (error) {
+      console.error('Error in updateNote:', error);
+      
+      if (error instanceof Error && error.message === 'Note not found') {
+        res.status(404).json({
+          success: false,
+          error: error.message
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Failed to update note'
         });
       }
     }
