@@ -11,27 +11,28 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import type { ReactElement } from 'react'
 
-interface CanvassingNote {
+interface CanvassingRecord {
   id: number
   person_name: string
   notes: string
+  email?: string
   created_at: string
   updated_at: string
 }
 
-interface NotesResponse {
+interface PeopleResponse {
   success: boolean
-  data: CanvassingNote[]
+  data: CanvassingRecord[]
   count: number
 }
 
-export default function ViewNotes(): ReactElement {
-  // Query for fetching all notes
-  const { data, isLoading, isError, error } = useQuery<NotesResponse>({
-    queryKey: ['notes'],
-    queryFn: async (): Promise<NotesResponse> => {
+export default function ViewPeople(): ReactElement {
+  // Query for fetching all canvassing records
+  const { data, isLoading, isError, error } = useQuery<PeopleResponse>({
+    queryKey: ['people'],
+    queryFn: async (): Promise<PeopleResponse> => {
       const res = await fetch('http://localhost:3001/api/notes')
-      if (!res.ok) throw new Error('Failed to fetch notes')
+      if (!res.ok) throw new Error('Failed to fetch canvassing records')
       return res.json()
     },
     refetchInterval: 30000, // Refetch every 30 seconds to stay updated
@@ -46,7 +47,7 @@ export default function ViewNotes(): ReactElement {
       <Container maxW="4xl" py={8}>
         <VStack gap={6}>
           <Spinner size="xl" />
-          <Text>Loading notes...</Text>
+          <Text>Loading canvassing records...</Text>
         </VStack>
       </Container>
     )
@@ -56,7 +57,7 @@ export default function ViewNotes(): ReactElement {
     return (
       <Container maxW="4xl" py={8}>
         <Alert.Root status="error">
-          <Alert.Title>Error loading notes</Alert.Title>
+          <Alert.Title>Error loading canvassing records</Alert.Title>
           <Alert.Description>
             {error instanceof Error ? error.message : 'An unknown error occurred'}
           </Alert.Description>
@@ -65,55 +66,62 @@ export default function ViewNotes(): ReactElement {
     )
   }
 
-  const notes = data?.data || []
+  const people = data?.data || []
 
   return (
     <Container maxW="4xl" py={8}>
       <VStack gap={6}>
         <Box textAlign="center">
           <Text fontSize="sm">
-            Total Notes: {data?.count || 0}
+            Total People: {data?.count || 0}
           </Text>
         </Box>
 
-        {notes.length === 0 ? (
+        {people.length === 0 ? (
           <Card.Root p={8} w="100%">
             <VStack gap={4}>
               <Text fontSize="lg">
-                No notes yet
+                No people recorded yet
               </Text>
               <Text>
-                Start canvassing and add your first note!
+                Start canvassing and add your first person!
               </Text>
             </VStack>
           </Card.Root>
         ) : (
           <VStack gap={4} w="100%">
-            {notes.map((note: CanvassingNote) => (
-              <Card.Root key={note.id} p={6} w="100%">
+            {people.map((person: CanvassingRecord) => (
+              <Card.Root key={person.id} p={6} w="100%">
                 <VStack gap={3} align="stretch">
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Text fontSize="lg" fontWeight="bold">
-                      {note.person_name}
-                    </Text>
+                    <VStack gap={1} align="start">
+                      <Text fontSize="lg" fontWeight="bold">
+                        {person.person_name}
+                      </Text>
+                      {person.email && (
+                        <Text fontSize="sm" color="gray.600">
+                          {person.email}
+                        </Text>
+                      )}
+                    </VStack>
                     <Badge fontSize="xs">
-                      #{note.id}
+                      #{person.id}
                     </Badge>
                   </Box>
                   
-                  {note.notes && (
+                  {person.notes && (
                     <Box>
                       <Text lineHeight="1.6">
-                        {note.notes}
+                        {person.notes}
                       </Text>
                     </Box>
                   )}
                   
                   <Box borderTop="1px" pt={3}>
                     <Text fontSize="sm">
-                      Added: {formatDate(note.created_at)}
-                      {note.updated_at !== note.created_at && (
-                        <> • Updated: {formatDate(note.updated_at)}</>
+                      Added: {formatDate(person.created_at)}
+                      {person.updated_at !== person.created_at && (
+                        <> • Updated: {formatDate(person.updated_at)}</>
                       )}
                     </Text>
                   </Box>

@@ -3,6 +3,20 @@
 ## Project Overview
 A canvassing web app for Empower's take-home assignment. Allows canvassers to record names and notes, and view all canvassing notes. Built with React frontend, Node.js backend, and MySQL database.
 
+## Database Credentials (Development)
+- User: root
+- Password: example  
+- Database: canvassing
+- Container: voter-canvassing-tool-db-1
+
+## Current Development Status
+Working on extra credit features:
+- ✅ Email field added to notes (schema, backend, frontend) - COMPLETED
+- ✅ Backend rebuilt and tested - email field working properly
+- ⏳ Edit notes feature
+- ⏳ Search functionality
+- ⏳ CSV export
+
 ## Development Plan
 
 ### 1. Infrastructure & Scaffold (COMPLETED)
@@ -48,9 +62,21 @@ Some implementation notes:
 You should have one page that lets a canvasser write down a name and some free-form notes about a person they just talked to.
 You should have another page that lets the canvasser view all of their canvassing notes.
 It's okay if you don't have a user login / authentication system implemented.
-It's okay if your pages are simple and/or ugly
+
 Your backend should have some sort of a JSON API.
 Please provide any documentation necessary to run your code and try it out.
 Make a git repo with an initial commit when you start working, and include the repo in your submission
 We understand that a lot of folks are experimenting with AI coding tools, particularly in interviews. If you want to, that's fine! Just say that you're using AI in your readme. Since a greenfield app like this is something AI should be good at, if you're using AI, we'll also expect you to get more of the "extra credit" done.
 At Empower, we use React (with hooks) for the frontend, Node for the backend, MySQL for the database, and a mix of Javascript and Typescript. Using these technologies would be ideal, but if you need to use the technologies of your choice, that's okay too.
+
+If you have extra time...
+Some ideas for enhancements to make to your project if you finish early:
+Implement users and authentication
+Allow editing the canvassing notes
+Add an email field, and add some validation on that email
+Make it possible to search across canvassing notes
+Make it possible to export the canvassing results as CSV
+Make the pages look nice
+Make the pages look nice on mobile
+Actually deploy it on a server somewhere
+
