@@ -7,7 +7,8 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd backend && npm test",
+    "seed-db": "docker exec -it voter-canvassing-tool-db-1 sh -c \"mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

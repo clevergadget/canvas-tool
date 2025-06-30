@@ -19,6 +19,7 @@ const createTestApp = () => {
   app.post('/api/notes', (req, res) => notesController.createNote(req, res));
   app.put('/api/notes/:id', (req, res) => notesController.updateNote(req, res));
   app.get('/api/notes/export/csv', (req, res) => notesController.exportCsv(req, res));
+  app.get('/api/notes/search', (req, res) => notesController.searchNotes(req, res));
   
   return app;
 };
@@ -246,6 +247,51 @@ describe('Notes API', () => {
 
       const csvContent = response.text;
       expect(csvContent).toBe('ID,Name,Email,Notes,Created At,Updated At\n');
+    });
+  });
+
+  describe('GET /api/notes/search', () => {
+    it('should return paginated search results', async () => {
+      const mockSearchResults = {
+        data: [
+          {
+            id: 1,
+            person_name: 'John Doe',
+            email: 'john@example.com',
+            notes: 'Discussed policy details',
+            created_at: '2023-01-01T00:00:00.000Z',
+            updated_at: '2023-01-01T00:00:00.000Z'
+          }
+        ],
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1
+      };
+
+      mockNotesService.searchNotes.mockResolvedValueOnce(mockSearchResults);
+
+      const response = await request(app)
+        .get('/api/notes/search')
+        .query({ query: 'policy', page: 1, limit: 10 })
+        .expect(200);
+
+      expect(response.body).toEqual({
+        success: true,
+        ...mockSearchResults
+      });
+    });
+
+    it('should handle invalid pagination parameters', async () => {
+      const response = await request(app)
+        .get('/api/notes/search')
+        .query({ page: 0, limit: 200 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: 'Limit must be between 1 and 100'
+      });
     });
   });
 });

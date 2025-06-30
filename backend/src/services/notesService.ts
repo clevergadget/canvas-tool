@@ -20,6 +20,20 @@ export interface UpdateNoteRequest {
   notes: string;
 }
 
+export interface SearchNotesRequest {
+  query?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedNotesResponse {
+  data: CanvassingNote[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export class NotesService {
   async getAllNotes(): Promise<CanvassingNote[]> {
     try {
@@ -101,6 +115,48 @@ export class NotesService {
     } catch (error) {
       console.error('Error updating note:', error);
       throw error;
+    }
+  }
+
+  async searchNotes(
+    searchParams: SearchNotesRequest = {}
+  ): Promise<PaginatedNotesResponse> {
+    try {
+      const { query = '', page = 1, limit = 10 } = searchParams;
+      const offset = (page - 1) * limit;
+
+      const searchTerm = query.trim() ? `%${query.trim()}%` : '%';
+
+      const whereClause = 'WHERE person_name LIKE ? OR email LIKE ? OR notes LIKE ?';
+      const countParams = [searchTerm, searchTerm, searchTerm];
+      const dataParams = [searchTerm, searchTerm, searchTerm, String(limit), String(offset)];
+
+      const countQuery = `SELECT COUNT(*) as total FROM canvassing_notes ${whereClause}`;
+      const [countRows] = await pool.execute<RowDataPacket[]>(countQuery, countParams);
+      const total = countRows[0].total as number;
+
+      const dataQuery = `
+        SELECT id, person_name, email, notes, created_at, updated_at 
+        FROM canvassing_notes 
+        ${whereClause}
+        ORDER BY created_at DESC 
+        LIMIT ? OFFSET ?
+      `;
+
+      const [dataRows] = await pool.execute<RowDataPacket[]>(dataQuery, dataParams);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: dataRows as CanvassingNote[],
+        total,
+        page,
+        limit,
+        totalPages
+      };
+    } catch (error) {
+      console.error('Error searching notes:', error);
+      throw new Error('Failed to search notes');
     }
   }
 }

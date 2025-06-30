@@ -46,12 +46,19 @@ docker-compose up --build
 - `npm run dev` — Start both frontend and backend
 - `npm run dev:frontend` — Start only the frontend
 - `npm run dev:backend` — Start only the backend
+- `npm test` — Run backend tests
+- `npm run seed-db` — Seed the database with sample data
 
 ### Database Commands (while running with Docker Compose)
 
 Connect to MySQL shell:
 ```bash
 docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
+```
+
+Seed the database with sample data:
+```bash
+docker exec -it voter-canvassing-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
 ```
 
 ### Testing
@@ -67,6 +74,9 @@ Tests use Jest and supertest to validate API endpoints.
 ### API Endpoints
 - `GET /api/notes` — Get all canvassing notes
 - `POST /api/notes` — Create a new note (requires `person_name` and optional `notes`)
+- `PUT /api/notes/:id` — Update a note (only `notes` field can be modified)
+- `GET /api/notes/export/csv` — Export all notes as CSV file
+- `GET /api/notes/search` — Search notes with pagination (supports query, page, limit parameters)
 - `GET /health` — Health check (backend + database status)
 
 ## What is in the current version?
@@ -79,15 +89,21 @@ Tests use Jest and supertest to validate API endpoints.
   - Canvassing note management: add notes form and view all notes page
   - React Router DOM for navigation
   - Responsive design
+  - Search functionality with pagination
+  - CSV export feature
+  - Email field with validation
+  - Edit functionality (notes only, with security restrictions)
 - **Backend:**
   - Express server with health check endpoint
   - MySQL connection via Docker Compose
-  - REST API endpoints for canvassing notes (`GET /api/notes`, `POST /api/notes`)
+  - REST API endpoints for canvassing notes (GET, POST, PUT, Search, Export CSV)
   - TypeScript throughout
   - Test suite using Jest
+  - Field-level security for updates (preventing modification of person name and email)
 - **Database:**
   - MySQL schema and init script
   - Canvassing notes table
+  - Sample seed data for testing search functionality
 - Clean, readable code focused on the core requirements
 
 ## AI Assistance
