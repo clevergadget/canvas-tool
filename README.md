@@ -86,8 +86,13 @@ Tests use Jest and supertest to validate API endpoints without hitting the real 
 - `.nvmrc` for consistent Node.js version (v22.12.0)
 - **Frontend:**
   - Vite + React + TypeScript app, stripped of all default boilerplate and graphics
-  - Chakra UI and TanStack Query set up and ready for use
-  - Minimal, readable health check UI (shows backend and DB status)
+  - Chakra UI with custom Empower Project brand theme (cyan and purple color palette)
+  - TanStack Query for professional data fetching and state management
+  - Complete canvassing note management UI: add notes form and view all notes page
+  - Responsive, mobile-friendly design with centralized color theming
+  - React Router DOM for client-side navigation
+  - All colors managed through Chakra theme tokens (no hardcoded colors)
+  - All colors managed through Chakra theme tokens (no hardcoded colors)
 - **Backend:**
   - TypeScript Express server with a `/health` endpoint returning backend and DB status
   - MySQL connection (local via Docker Compose)
@@ -97,7 +102,8 @@ Tests use Jest and supertest to validate API endpoints without hitting the real 
   - Standard scripts for development and build
 - **Database:**
   - MySQL schema/init script for local development
-- All code is intentionally minimal, clear, and reviewer-friendly, with no unnecessary extras
+  - Canvassing notes table with proper indexing and constraints
+- All code is intentionally minimal, clear, and reviewer-friendly, with professional UI/UX
 
 ## Why this approach?
 - To provide a clean, professional starting point for full-stack development

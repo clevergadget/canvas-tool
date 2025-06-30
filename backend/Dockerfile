@@ -13,4 +13,4 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm ci --omit=dev
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
