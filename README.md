@@ -54,18 +54,6 @@ Connect to MySQL shell:
 docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
 ```
 
-Quick database queries:
-```bash
-# See all tables
-docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SHOW TABLES;"
-
-# View all canvassing notes
-docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SELECT * FROM canvassing_notes ORDER BY created_at DESC;"
-
-# Count total notes
-docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing -e "SELECT COUNT(*) as total_notes FROM canvassing_notes;"
-```
-
 ### Testing
 
 Run backend tests:
@@ -74,7 +62,7 @@ cd backend
 npm test
 ```
 
-Tests use Jest and supertest to validate API endpoints without hitting the real database.
+Tests use Jest and supertest to validate API endpoints.
 
 ### API Endpoints
 - `GET /api/notes` — Get all canvassing notes
@@ -85,37 +73,22 @@ Tests use Jest and supertest to validate API endpoints without hitting the real 
 - Clean project structure with separate `frontend`, `backend`, and `database` directories
 - `.nvmrc` for consistent Node.js version (v22.12.0)
 - **Frontend:**
-  - Vite + React + TypeScript app, stripped of all default boilerplate and graphics
-  - Chakra UI with custom Empower Project brand theme (cyan and purple color palette)
-  - TanStack Query for professional data fetching and state management
-  - Complete canvassing note management UI: add notes form and view all notes page
-  - Responsive, mobile-friendly design with centralized color theming
-  - React Router DOM for client-side navigation
-  - All colors managed through Chakra theme tokens (no hardcoded colors)
-  - All colors managed through Chakra theme tokens (no hardcoded colors)
+  - Vite + React + TypeScript app
+  - Chakra UI with custom theme
+  - TanStack Query for data fetching
+  - Canvassing note management: add notes form and view all notes page
+  - React Router DOM for navigation
+  - Responsive design
 - **Backend:**
-  - TypeScript Express server with a `/health` endpoint returning backend and DB status
-  - MySQL connection (local via Docker Compose)
+  - Express server with health check endpoint
+  - MySQL connection via Docker Compose
   - REST API endpoints for canvassing notes (`GET /api/notes`, `POST /api/notes`)
-  - Professional service/controller architecture with TypeScript types
-  - Comprehensive test suite using Jest and supertest (mocked DB calls)
-  - Standard scripts for development and build
+  - TypeScript throughout
+  - Test suite using Jest
 - **Database:**
-  - MySQL schema/init script for local development
-  - Canvassing notes table with proper indexing and constraints
-- All code is intentionally minimal, clear, and reviewer-friendly, with professional UI/UX
-
-## Why this approach?
-- To provide a clean, professional starting point for full-stack development
-- To make the codebase as readable and approachable as possible for the reviewer
-- To ensure all infrastructure is working before adding features
-
-## Development Plan
-See `COPILOT_CONTEXT.md` for a sequenced, AI-assisted plan and context.
+  - MySQL schema and init script
+  - Canvassing notes table
+- Clean, readable code focused on the core requirements
 
 ## AI Assistance
-This project is developed in partnership with GitHub Copilot (AI), as permitted by the assignment. All code is written for clarity, simplicity, and maintainability for future developers.
-
----
-
-For any questions, please contact Phillip Dodson.
+This project is developed with GitHub Copilot assistance, as permitted by the assignment.
