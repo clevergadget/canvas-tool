@@ -10,12 +10,14 @@ A canvassing web app for Empower's take-home assignment. Allows canvassers to re
 - Container: voter-canvassing-tool-db-1
 
 ## Current Development Status
-Working on extra credit features:
+Extra credit features implemented:
 - ✅ Email field added to notes (schema, backend, frontend) - COMPLETED
-- ✅ Backend rebuilt and tested - email field working properly
-- ⏳ Edit notes feature
+- ✅ Edit notes functionality with security restrictions - COMPLETED
+- ✅ Backend validation preventing unauthorized field modifications - COMPLETED
+- ✅ Comprehensive test coverage for edit functionality - COMPLETED
+- ✅ Frontend cleanup (removed redundant files) - COMPLETED
 - ⏳ Search functionality
-- ⏳ CSV export
+- ⏳ CSV export - NEXT FEATURE
 
 ## Development Plan
 
@@ -42,11 +44,24 @@ Working on extra credit features:
 - Backend testing with Jest
 
 ### 5. Frontend Features (COMPLETED)
-- Add note page (name + notes form)
-- View notes page
+- Add person page (name + email + notes form)
+- View people page with email display
+- Edit person page (notes only, with security restrictions)
 - TanStack Query for data fetching
 - Chakra UI theming
 - React Router navigation
+
+### 6. Edit Functionality (COMPLETED)
+- PUT endpoint for editing notes with field restrictions
+- Backend security preventing modification of name/email fields
+- Frontend edit form for notes only
+- Comprehensive test coverage for edit security
+- Proper validation and error handling
+
+### 7. Code Cleanup (COMPLETED)
+- Removed redundant frontend files (AddNote.tsx, ViewNotes.tsx)
+- Consolidated to clean page structure (AddPerson, EditPerson, ViewPeople)
+- Updated routing and imports
 
 ### 6. Documentation (COMPLETED)
 - README with setup instructions
@@ -54,7 +69,13 @@ Working on extra credit features:
 - Project documentation
 
 ## Current Status
-All core requirements met. App is functional and ready for review.
+Core requirements and multiple extra credit features completed:
+- ✅ Email field with validation
+- ✅ Edit notes functionality with security restrictions
+- ✅ Comprehensive test coverage
+- ✅ Clean, maintainable code structure
+
+**NEXT: Implementing CSV export functionality**
 
 
 Assignment 

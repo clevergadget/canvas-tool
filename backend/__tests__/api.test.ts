@@ -18,6 +18,7 @@ const createTestApp = () => {
   app.get('/api/notes', (req, res) => notesController.getAllNotes(req, res));
   app.post('/api/notes', (req, res) => notesController.createNote(req, res));
   app.put('/api/notes/:id', (req, res) => notesController.updateNote(req, res));
+  app.get('/api/notes/export/csv', (req, res) => notesController.exportCsv(req, res));
   
   return app;
 };
@@ -190,6 +191,61 @@ describe('Notes API', () => {
         success: false,
         error: 'Notes field is required'
       });
+    });
+  });
+
+  describe('GET /api/notes/export/csv', () => {
+    it('should export CSV with correct headers and data', async () => {
+      const mockNotes = [
+        {
+          id: 1,
+          person_name: 'John Doe',
+          email: 'john@example.com',
+          notes: 'Great conversation about policy',
+          created_at: '2023-01-01T00:00:00.000Z',
+          updated_at: '2023-01-01T00:00:00.000Z'
+        },
+        {
+          id: 2,
+          person_name: 'Jane Smith',
+          email: undefined,
+          notes: 'Interested in volunteering, has "special" needs',
+          created_at: '2023-01-02T00:00:00.000Z',
+          updated_at: '2023-01-02T00:00:00.000Z'
+        }
+      ];
+
+      mockNotesService.getAllNotes.mockResolvedValueOnce(mockNotes);
+
+      const response = await request(app)
+        .get('/api/notes/export/csv')
+        .expect(200);
+
+      expect(response.headers['content-type']).toBe('text/csv; charset=utf-8');
+      expect(response.headers['content-disposition']).toMatch(/attachment; filename="canvassing-data-\d{4}-\d{2}-\d{2}\.csv"/);
+      
+      const csvContent = response.text;
+      const lines = csvContent.split('\n');
+      
+      // Check header
+      expect(lines[0]).toBe('ID,Name,Email,Notes,Created At,Updated At');
+      
+      // Check first data row
+      expect(lines[1]).toBe('1,John Doe,john@example.com,Great conversation about policy,2023-01-01T00:00:00.000Z,2023-01-01T00:00:00.000Z');
+      
+      // Check second data row (with escaped quotes and empty email)
+      expect(lines[2]).toBe('2,Jane Smith,,"Interested in volunteering, has ""special"" needs",2023-01-02T00:00:00.000Z,2023-01-02T00:00:00.000Z');
+    });
+
+    it('should handle empty data', async () => {
+      mockNotesService.getAllNotes.mockResolvedValueOnce([]);
+
+      const response = await request(app)
+        .get('/api/notes/export/csv')
+        .expect(200);
+
+      const csvContent = response.text;
+      expect(csvContent).toBe('ID,Name,Email,Notes,Created At,Updated At\n');
     });
   });
 });

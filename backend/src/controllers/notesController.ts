@@ -96,6 +96,49 @@ export class NotesController {
       }
     }
   }
+
+  async exportCsv(req: Request, res: Response): Promise<void> {
+    try {
+      const notes = await notesService.getAllNotes();
+      
+      // Generate CSV content
+      const csvHeader = 'ID,Name,Email,Notes,Created At,Updated At\n';
+      const csvRows = notes.map(note => {
+        // Escape commas and quotes in the data
+        const escapeCsvField = (field: string | null | undefined): string => {
+          if (!field) return '';
+          const stringField = String(field);
+          if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+            return `"${stringField.replace(/"/g, '""')}"`;
+          }
+          return stringField;
+        };
+
+        return [
+          note.id,
+          escapeCsvField(note.person_name),
+          escapeCsvField(note.email),
+          escapeCsvField(note.notes),
+          new Date(note.created_at).toISOString(),
+          new Date(note.updated_at).toISOString()
+        ].join(',');
+      }).join('\n');
+
+      const csvContent = csvHeader + csvRows;
+
+      // Set headers for file download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="canvassing-data-${new Date().toISOString().split('T')[0]}.csv"`);
+      
+      res.send(csvContent);
+    } catch (error) {
+      console.error('Error in exportCsv:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to export CSV'
+      });
+    }
+  }
 }
 
 export const notesController = new NotesController();
