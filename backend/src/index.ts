@@ -23,6 +23,7 @@ app.get('/health', async (_req: Request, res: Response): Promise<void> => {
 app.get('/api/notes', (req: Request, res: Response) => notesController.getAllNotes(req, res))
 app.post('/api/notes', (req: Request, res: Response) => notesController.createNote(req, res))
 app.put('/api/notes/:id', (req: Request, res: Response) => notesController.updateNote(req, res))
+app.get('/api/notes/export/csv', (req: Request, res: Response) => notesController.exportCsv(req, res))
 
 app.listen(port, (): void => {
   console.log(`Backend listening on port ${port}`)

@@ -46,6 +46,29 @@ export default function ViewPeople(): ReactElement {
     return new Date(dateString).toLocaleString()
   }
 
+  const handleExportCsv = async (): Promise<void> => {
+    try {
+      const response = await fetch('http://localhost:3001/api/notes/export/csv')
+      if (!response.ok) throw new Error('Failed to export CSV')
+      
+      const csvContent = await response.text()
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      
+      // Create download link
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `canvassing-data-${new Date().toISOString().split('T')[0]}.csv`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error exporting CSV:', error)
+      // Could add toast notification here
+    }
+  }
+
   if (isLoading) {
     return (
       <Container maxW="4xl" py={8}>
@@ -75,10 +98,19 @@ export default function ViewPeople(): ReactElement {
   return (
     <Container maxW="4xl" py={8}>
       <VStack gap={6}>
-        <Box textAlign="center">
+        <Box display="flex" justifyContent="space-between" alignItems="center" w="100%">
           <Text fontSize="sm">
             Total People: {data?.count || 0}
           </Text>
+          {people.length > 0 && (
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={handleExportCsv}
+            >
+              Export CSV
+            </Button>
+          )}
         </Box>
 
         {people.length === 0 ? (
