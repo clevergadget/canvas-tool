@@ -8,7 +8,10 @@
     "dev:backend": "cd backend && npm run dev",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "test": "cd backend && npm test",
-    "seed-db": "docker exec -it voter-canvassing-tool-db-1 sh -c \"mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql\""
+    "build:shared-types": "cd shared-types && npm install && npm run build",
+    "seed-db": "docker exec voter-canvassing-tool-db-1 sh -c \"mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql\"",
+    "setup": "chmod +x ./scripts/setup.sh && ./scripts/setup.sh",
+    "cleanup": "chmod +x ./scripts/cleanup.sh && ./scripts/cleanup.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -13,24 +13,7 @@ import { ResultsSummary } from '../components/ResultsSummary'
 import { PaginationControls } from '../components/PaginationControls'
 import { PeopleList } from '../components/PeopleList'
 import { EmptyState } from '../components/EmptyState'
-
-interface CanvassingRecord {
-  id: number
-  person_name: string
-  notes: string
-  email?: string
-  created_at: string
-  updated_at: string
-}
-
-interface PeopleResponse {
-  success: boolean
-  data: CanvassingRecord[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import type { PaginatedPeopleResponse } from '@voter-canvassing-tool/shared-types'
 
 export default function ViewPeople(): ReactElement {
   const [searchQuery, setSearchQuery] = useState('')
@@ -51,9 +34,9 @@ export default function ViewPeople(): ReactElement {
   }, [searchQuery])
   
   // Query for fetching canvassing records with search and pagination
-  const { data, isLoading, isError, error, isFetching } = useQuery<PeopleResponse>({
+  const { data, isLoading, isError, error, isFetching } = useQuery<PaginatedPeopleResponse>({
     queryKey: ['people', debouncedQuery, currentPage],
-    queryFn: async (): Promise<PeopleResponse> => {
+    queryFn: async (): Promise<PaginatedPeopleResponse> => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: pageSize.toString()

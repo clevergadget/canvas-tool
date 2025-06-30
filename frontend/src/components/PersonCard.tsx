@@ -1,18 +1,10 @@
 import { VStack, Card, Text, Box, Button, Badge } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { memo } from 'react'
-
-interface CanvassingRecord {
-  id: number
-  person_name: string
-  notes: string
-  email?: string
-  created_at: string
-  updated_at: string
-}
+import type { Person } from '@voter-canvassing-tool/shared-types'
 
 interface PersonCardProps {
-  person: CanvassingRecord
+  person: Person
 }
 
 export const PersonCard = memo(function PersonCard({ person }: PersonCardProps) {

@@ -1,18 +1,10 @@
 import { VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { PersonCard } from './PersonCard'
-
-interface CanvassingRecord {
-  id: number
-  person_name: string
-  notes: string
-  email?: string
-  created_at: string
-  updated_at: string
-}
+import type { Person } from '@voter-canvassing-tool/shared-types'
 
 interface PeopleListProps {
-  people: CanvassingRecord[]
+  people: Person[]
 }
 
 export const PeopleList = memo(function PeopleList({ people }: PeopleListProps) {
