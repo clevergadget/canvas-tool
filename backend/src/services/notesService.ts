@@ -16,6 +16,10 @@ export interface CreateNoteRequest {
   notes: string;
 }
 
+export interface UpdateNoteRequest {
+  notes: string;
+}
+
 export class NotesService {
   async getAllNotes(): Promise<CanvassingNote[]> {
     try {
@@ -57,6 +61,45 @@ export class NotesService {
       return rows[0] as CanvassingNote;
     } catch (error) {
       console.error('Error creating note:', error);
+      throw error;
+    }
+  }
+
+  async updateNote(id: number, noteData: UpdateNoteRequest): Promise<CanvassingNote> {
+    try {
+      const { notes } = noteData;
+      
+      // First, fetch the existing note to preserve original data
+      const [existingRows] = await pool.execute<RowDataPacket[]>(
+        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes WHERE id = ?',
+        [id]
+      );
+
+      if (existingRows.length === 0) {
+        throw new Error('Note not found');
+      }
+
+      const existingNote = existingRows[0] as CanvassingNote;
+
+      // Only update the notes field, preserve original person_name and email
+      const [result] = await pool.execute<ResultSetHeader>(
+        'UPDATE canvassing_notes SET notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [notes || '', id]
+      );
+
+      if (result.affectedRows === 0) {
+        throw new Error('Note not found');
+      }
+
+      // Fetch the updated note
+      const [rows] = await pool.execute<RowDataPacket[]>(
+        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes WHERE id = ?',
+        [id]
+      );
+
+      return rows[0] as CanvassingNote;
+    } catch (error) {
+      console.error('Error updating note:', error);
       throw error;
     }
   }

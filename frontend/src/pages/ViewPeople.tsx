@@ -6,9 +6,11 @@ import {
   Card,
   Spinner,
   Alert,
-  Badge
+  Badge,
+  Button
 } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import type { ReactElement } from 'react'
 
 interface CanvassingRecord {
@@ -27,6 +29,8 @@ interface PeopleResponse {
 }
 
 export default function ViewPeople(): ReactElement {
+  const navigate = useNavigate()
+  
   // Query for fetching all canvassing records
   const { data, isLoading, isError, error } = useQuery<PeopleResponse>({
     queryKey: ['people'],
@@ -104,9 +108,18 @@ export default function ViewPeople(): ReactElement {
                         </Text>
                       )}
                     </VStack>
-                    <Badge fontSize="xs">
-                      #{person.id}
-                    </Badge>
+                    <Box display="flex" gap={2} alignItems="center">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/edit/${person.id}`)}
+                      >
+                        Edit
+                      </Button>
+                      <Badge fontSize="xs">
+                        #{person.id}
+                      </Badge>
+                    </Box>
                   </Box>
                   
                   {person.notes && (
