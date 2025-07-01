@@ -14,6 +14,7 @@ import { PaginationControls } from '../components/PaginationControls'
 import { PeopleList } from '../components/PeopleList'
 import { EmptyState } from '../components/EmptyState'
 import type { PaginatedPeopleResponse } from '@canvas-tool/shared-types'
+import { searchPeople, exportCsv } from '../services/api'
 
 export default function ViewPeople(): ReactElement {
   const [searchQuery, setSearchQuery] = useState('')
@@ -36,20 +37,7 @@ export default function ViewPeople(): ReactElement {
   // Query for fetching canvassing records with search and pagination
   const { data, isLoading, isError, error, isFetching } = useQuery<PaginatedPeopleResponse>({
     queryKey: ['people', debouncedQuery, currentPage],
-    queryFn: async (): Promise<PaginatedPeopleResponse> => {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: pageSize.toString()
-      })
-      
-      if (debouncedQuery.trim()) {
-        params.append('query', debouncedQuery.trim())
-      }
-
-      const res = await fetch(`http://localhost:3001/api/notes/search?${params}`)
-      if (!res.ok) throw new Error('Failed to fetch canvassing records')
-      return res.json()
-    },
+    queryFn: () => searchPeople(debouncedQuery, currentPage, pageSize),
     refetchInterval: 30000, // Refetch every 30 seconds to stay updated
   })
 
@@ -62,10 +50,7 @@ export default function ViewPeople(): ReactElement {
 
   const handleExportCsv = useCallback(async (): Promise<void> => {
     try {
-      const response = await fetch('http://localhost:3001/api/notes/export/csv')
-      if (!response.ok) throw new Error('Failed to export CSV')
-      
-      const csvContent = await response.text()
+      const csvContent = await exportCsv()
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = window.URL.createObjectURL(blob)
       

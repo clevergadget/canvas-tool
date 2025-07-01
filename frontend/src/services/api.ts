@@ -1,14 +1,14 @@
-import type { CreateNoteRequest, UpdateNoteRequest } from '../types';
+import type { CreatePersonRequest, UpdatePersonNotesRequest } from '@canvas-tool/shared-types';
 
 const API_BASE_URL = 'http://localhost:3001';
 
-export async function getAllNotes() {
+export async function getAllPeople() {
   const res = await fetch(`${API_BASE_URL}/api/notes`);
-  if (!res.ok) throw new Error('Failed to fetch notes');
+  if (!res.ok) throw new Error('Failed to fetch people');
   return res.json();
 }
 
-export async function createNote(personData: CreateNoteRequest) {
+export async function createPerson(personData: CreatePersonRequest) {
   const res = await fetch(`${API_BASE_URL}/api/notes`, {
     method: 'POST',
     headers: {
@@ -20,7 +20,7 @@ export async function createNote(personData: CreateNoteRequest) {
   return res.json();
 }
 
-export async function updateNote(id: number, data: UpdateNoteRequest) {
+export async function updatePerson(id: number, data: UpdatePersonNotesRequest) {
   const res = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
     method: 'PUT',
     headers: {
@@ -28,11 +28,11 @@ export async function updateNote(id: number, data: UpdateNoteRequest) {
     },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error('Failed to update note');
+  if (!res.ok) throw new Error('Failed to update person');
   return res.json();
 }
 
-export async function searchNotes(query: string = '', page: number = 1, limit: number = 10) {
+export async function searchPeople(query: string = '', page: number = 1, limit: number = 10) {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString()
@@ -43,7 +43,7 @@ export async function searchNotes(query: string = '', page: number = 1, limit: n
   }
 
   const res = await fetch(`${API_BASE_URL}/api/notes/search?${params}`);
-  if (!res.ok) throw new Error('Failed to search canvassing records');
+  if (!res.ok) throw new Error('Failed to search people');
   return res.json();
 }
 

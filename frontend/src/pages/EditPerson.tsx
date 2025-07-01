@@ -15,6 +15,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import type { ReactElement } from 'react'
 import type { Person, PeopleResponse, UpdatePersonNotesRequest } from '@canvas-tool/shared-types'
+import { getAllPeople, updatePerson } from '../services/api'
 
 export default function EditPerson(): ReactElement {
   const { id } = useParams<{ id: string }>()
@@ -27,12 +28,8 @@ export default function EditPerson(): ReactElement {
 
   // Fetch all notes to find the one we're editing
   const { data, isLoading } = useQuery<PeopleResponse>({
-    queryKey: ['notes'],
-    queryFn: async (): Promise<PeopleResponse> => {
-      const res = await fetch('http://localhost:3001/api/notes')
-      if (!res.ok) throw new Error('Failed to fetch notes')
-      return res.json()
-    }
+    queryKey: ['people'],
+    queryFn: getAllPeople
   })
 
   // Find the note we're editing
@@ -49,17 +46,8 @@ export default function EditPerson(): ReactElement {
 
   // Mutation for updating the note
   const updateMutation = useMutation({
-    mutationFn: async (data: UpdatePersonNotesRequest) => {
-      const res = await fetch(`http://localhost:3001/api/notes/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      if (!res.ok) throw new Error('Failed to update note')
-      return res.json()
-    },
+    mutationFn: ({ id, data }: { id: number; data: UpdatePersonNotesRequest }) => 
+      updatePerson(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['people'] })
       navigate('/view')
@@ -69,7 +57,8 @@ export default function EditPerson(): ReactElement {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     updateMutation.mutate({
-      notes,
+      id: parseInt(id || ''),
+      data: { notes }
     })
   }
 

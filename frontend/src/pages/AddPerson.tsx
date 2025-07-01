@@ -8,36 +8,29 @@ import {
   Text,
   Card
 } from '@chakra-ui/react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import type { ReactElement, FormEvent, ChangeEvent } from 'react'
-import type { CreatePersonRequest } from '@canvas-tool/shared-types'
+import { createPerson } from '../services/api'
 
 export default function AddPerson(): ReactElement {
   const [personName, setPersonName] = useState<string>('')
   const [notes, setNotes] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [emailError, setEmailError] = useState<string>('')
+  const queryClient = useQueryClient()
 
   // Mutation for adding a person to canvassing records
   const addPersonMutation = useMutation({
-    mutationFn: async (personData: CreatePersonRequest) => {
-      const res = await fetch('http://localhost:3001/api/notes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(personData),
-      })
-      if (!res.ok) throw new Error('Failed to add person')
-      return res.json()
-    },
+    mutationFn: createPerson,
     onSuccess: () => {
       // Clear form after successful submission
       setPersonName('')
       setNotes('')
       setEmail('')
       setEmailError('')
+      // Invalidate people queries to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['people'] })
     },
   })
 
