@@ -6,7 +6,7 @@ import type {
   UpdatePersonNotesRequest,
   SearchPeopleRequest,
   PaginatedPeopleData
-} from '@voter-canvassing-tool/shared-types';
+} from '@canvas-tool/shared-types';
 
 export class NotesService {
   async getAllNotes(): Promise<Person[]> {

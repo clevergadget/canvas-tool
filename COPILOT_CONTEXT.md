@@ -7,7 +7,7 @@ A canvassing web app for Empower's take-home assignment. Allows canvassers to re
 - User: root
 - Password: example  
 - Database: canvassing
-- Container: voter-canvassing-tool-db-1
+- Container: canvas-tool-db-1
 
 ## Current Development Status
 Extra credit features implemented:

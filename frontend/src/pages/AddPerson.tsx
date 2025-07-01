@@ -11,7 +11,7 @@ import {
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import type { ReactElement, FormEvent, ChangeEvent } from 'react'
-import type { CreatePersonRequest } from '@voter-canvassing-tool/shared-types'
+import type { CreatePersonRequest } from '@canvas-tool/shared-types'
 
 export default function AddPerson(): ReactElement {
   const [personName, setPersonName] = useState<string>('')

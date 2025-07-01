@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import type { ReactElement } from 'react'
-import type { Person, PeopleResponse, UpdatePersonNotesRequest } from '@voter-canvassing-tool/shared-types'
+import type { Person, PeopleResponse, UpdatePersonNotesRequest } from '@canvas-tool/shared-types'
 
 export default function EditPerson(): ReactElement {
   const { id } = useParams<{ id: string }>()

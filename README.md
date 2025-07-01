@@ -76,12 +76,12 @@ This will stop and remove all Docker containers created for this project.
 
 Connect to MySQL shell:
 ```bash
-docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
+docker exec -it canvas-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
 ```
 
 Seed the database with sample data:
 ```bash
-docker exec -it voter-canvassing-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
+docker exec -it canvas-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
 ```
 
 ### Testing

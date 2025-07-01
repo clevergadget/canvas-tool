@@ -4,7 +4,7 @@ import type {
   CreatePersonRequest,
   UpdatePersonNotesRequest,
   SearchPeopleRequest
-} from '@voter-canvassing-tool/shared-types';
+} from '@canvas-tool/shared-types';
 
 export class NotesController {
   async getAllNotes(req: Request, res: Response): Promise<void> {

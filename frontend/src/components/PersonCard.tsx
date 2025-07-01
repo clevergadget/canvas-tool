@@ -1,7 +1,7 @@
 import { VStack, Card, Text, Box, Button, Badge } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { memo } from 'react'
-import type { Person } from '@voter-canvassing-tool/shared-types'
+import type { Person } from '@canvas-tool/shared-types'
 
 interface PersonCardProps {
   person: Person

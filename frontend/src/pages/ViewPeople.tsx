@@ -13,7 +13,7 @@ import { ResultsSummary } from '../components/ResultsSummary'
 import { PaginationControls } from '../components/PaginationControls'
 import { PeopleList } from '../components/PeopleList'
 import { EmptyState } from '../components/EmptyState'
-import type { PaginatedPeopleResponse } from '@voter-canvassing-tool/shared-types'
+import type { PaginatedPeopleResponse } from '@canvas-tool/shared-types'
 
 export default function ViewPeople(): ReactElement {
   const [searchQuery, setSearchQuery] = useState('')
