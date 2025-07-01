@@ -8,16 +8,16 @@ import type {
   PaginatedPeopleData
 } from '@canvas-tool/shared-types';
 
-export class NotesService {
-  async getAllNotes(): Promise<Person[]> {
+export class PeopleService {
+  async getAllPeople(): Promise<Person[]> {
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record ORDER BY created_at DESC'
     );
     return rows as Person[];
   }
 
-  async createNote(noteData: CreatePersonRequest): Promise<Person> {
-    const { first_name, last_name, email, notes } = noteData;
+  async createPerson(personData: CreatePersonRequest): Promise<Person> {
+    const { first_name, last_name, email, notes } = personData;
     
     // Validate required fields
     if (!first_name?.trim()) {
@@ -38,7 +38,7 @@ export class NotesService {
       [first_name.trim(), last_name.trim(), email?.trim() || null, notes || '']
     );
 
-    // Fetch the created note
+    // Fetch the created person
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record WHERE id = ?',
       [result.insertId]
@@ -47,17 +47,17 @@ export class NotesService {
     return rows[0] as Person;
   }
 
-  async updateNote(id: number, noteData: UpdatePersonNotesRequest): Promise<Person> {
-    const { notes } = noteData;
+  async updatePerson(id: number, personData: UpdatePersonNotesRequest): Promise<Person> {
+    const { notes } = personData;
     
-    // Check if note exists
+    // Check if person exists
     const [existingRows] = await pool.execute<RowDataPacket[]>(
       'SELECT id FROM canvassing_record WHERE id = ?',
       [id]
     );
 
     if (existingRows.length === 0) {
-      throw new Error('Note not found');
+      throw new Error('Person not found');
     }
 
     // Update the notes field
@@ -66,7 +66,7 @@ export class NotesService {
       [notes || '', id]
     );
 
-    // Fetch the updated note
+    // Fetch the updated person
     const [rows] = await pool.execute<RowDataPacket[]>(
       'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record WHERE id = ?',
       [id]
@@ -75,7 +75,7 @@ export class NotesService {
     return rows[0] as Person;
   }
 
-  async searchNotes(
+  async searchPeople(
     searchParams: SearchPeopleRequest = {}
   ): Promise<PaginatedPeopleData> {
     const { query = '', page = 1, limit = 10 } = searchParams;
@@ -117,4 +117,4 @@ export class NotesService {
   }
 }
 
-export const notesService = new NotesService();
+export const peopleService = new PeopleService();

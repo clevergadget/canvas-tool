@@ -3,13 +3,13 @@ import type { CreatePersonRequest, UpdatePersonNotesRequest } from '@canvas-tool
 const API_BASE_URL = 'http://localhost:3001';
 
 export async function getAllPeople() {
-  const res = await fetch(`${API_BASE_URL}/api/notes`);
+  const res = await fetch(`${API_BASE_URL}/api/people`);
   if (!res.ok) throw new Error('Failed to fetch people');
   return res.json();
 }
 
 export async function createPerson(personData: CreatePersonRequest) {
-  const res = await fetch(`${API_BASE_URL}/api/notes`, {
+  const res = await fetch(`${API_BASE_URL}/api/people`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function createPerson(personData: CreatePersonRequest) {
 }
 
 export async function updatePerson(id: number, data: UpdatePersonNotesRequest) {
-  const res = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/people/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -42,13 +42,13 @@ export async function searchPeople(query: string = '', page: number = 1, limit: 
     params.append('query', query.trim());
   }
 
-  const res = await fetch(`${API_BASE_URL}/api/notes/search?${params}`);
+  const res = await fetch(`${API_BASE_URL}/api/people/search?${params}`);
   if (!res.ok) throw new Error('Failed to search people');
   return res.json();
 }
 
 export async function exportCsv() {
-  const response = await fetch(`${API_BASE_URL}/api/notes/export/csv`);
+  const response = await fetch(`${API_BASE_URL}/api/people/export/csv`);
   if (!response.ok) throw new Error('Failed to export CSV');
   return response.text();
 }

@@ -1,12 +1,12 @@
 import request from 'supertest';
 import express from 'express';
 import cors from 'cors';
-import { notesController } from '../src/controllers/notesController';
-import { notesService } from '../src/services/notesService';
+import { peopleController } from '../src/controllers/peopleController';
+import { peopleService } from '../src/services/peopleService';
 
 // Mock the database service
-jest.mock('../src/services/notesService');
-const mockNotesService = notesService as jest.Mocked<typeof notesService>;
+jest.mock('../src/services/peopleService');
+const mockPeopleService = peopleService as jest.Mocked<typeof peopleService>;
 
 // Create a test app with just the routes we want to test
 const createTestApp = () => {
@@ -15,29 +15,29 @@ const createTestApp = () => {
   app.use(express.json());
   
   // Add the routes we want to test
-  app.get('/api/notes', (req, res) => notesController.getAllNotes(req, res));
-  app.post('/api/notes', (req, res) => notesController.createNote(req, res));
-  app.put('/api/notes/:id', (req, res) => notesController.updateNote(req, res));
-  app.get('/api/notes/export/csv', (req, res) => notesController.exportCsv(req, res));
-  app.get('/api/notes/search', (req, res) => notesController.searchNotes(req, res));
+  app.get('/api/people', (req, res) => peopleController.getAllPeople(req, res));
+  app.post('/api/people', (req, res) => peopleController.createPerson(req, res));
+  app.put('/api/people/:id', (req, res) => peopleController.updatePerson(req, res));
+  app.get('/api/people/export/csv', (req, res) => peopleController.exportCsv(req, res));
+  app.get('/api/people/search', (req, res) => peopleController.searchPeople(req, res));
   
   return app;
 };
 
-describe('Notes API', () => {
+describe('People API', () => {
   const app = createTestApp();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('GET /api/notes', () => {
+  describe('GET /api/people', () => {
     it('should return empty list initially', async () => {
       // Mock the service to return empty array
-      mockNotesService.getAllNotes.mockResolvedValueOnce([]);
+      mockPeopleService.getAllPeople.mockResolvedValueOnce([]);
 
       const response = await request(app)
-        .get('/api/notes')
+        .get('/api/people')
         .expect(200);
 
       expect(response.body).toEqual({
@@ -48,16 +48,16 @@ describe('Notes API', () => {
     });
   });
 
-  describe('POST /api/notes', () => {
-    it('should create a note with valid data', async () => {
-      const noteData = {
+  describe('POST /api/people', () => {
+    it('should create a person with valid data', async () => {
+      const personData = {
         first_name: 'Test',
         last_name: 'Person',
         email: 'test@example.com',
         notes: 'Test notes'
       };
 
-      const mockNote = {
+      const mockPerson = {
         id: 1,
         first_name: 'Test',
         last_name: 'Person',
@@ -67,26 +67,26 @@ describe('Notes API', () => {
         updated_at: '2023-01-01T00:00:00.000Z'
       };
 
-      // Mock the service to return the created note
-      mockNotesService.createNote.mockResolvedValueOnce(mockNote);
+      // Mock the service to return the created person
+      mockPeopleService.createPerson.mockResolvedValueOnce(mockPerson);
 
       const response = await request(app)
-        .post('/api/notes')
-        .send(noteData)
+        .post('/api/people')
+        .send(personData)
         .expect(201);
 
       expect(response.body).toEqual({
         success: true,
-        data: mockNote
+        data: mockPerson
       });
     });
 
-    it('should reject note without first_name', async () => {
+    it('should reject person without first_name', async () => {
       // Mock the service to throw an error
-      mockNotesService.createNote.mockRejectedValueOnce(new Error('First name is required'));
+      mockPeopleService.createPerson.mockRejectedValueOnce(new Error('First name is required'));
 
       const response = await request(app)
-        .post('/api/notes')
+        .post('/api/people')
         .send({ last_name: 'Person', email: 'test@example.com', notes: 'Test notes' })
         .expect(400);
 
@@ -96,12 +96,12 @@ describe('Notes API', () => {
       });
     });
 
-    it('should reject note without last_name', async () => {
+    it('should reject person without last_name', async () => {
       // Mock the service to throw an error
-      mockNotesService.createNote.mockRejectedValueOnce(new Error('Last name is required'));
+      mockPeopleService.createPerson.mockRejectedValueOnce(new Error('Last name is required'));
 
       const response = await request(app)
-        .post('/api/notes')
+        .post('/api/people')
         .send({ first_name: 'Test', email: 'test@example.com', notes: 'Test notes' })
         .expect(400);
 
@@ -112,9 +112,9 @@ describe('Notes API', () => {
     });
   });
 
-  describe('PUT /api/notes/:id', () => {
+  describe('PUT /api/people/:id', () => {
     it('should update only the notes field', async () => {
-      const originalNote = {
+      const originalPerson = {
         id: 1,
         first_name: 'Original',
         last_name: 'Person',
@@ -128,31 +128,31 @@ describe('Notes API', () => {
         notes: 'Updated notes only' // Only notes can be updated
       };
 
-      const updatedNote = {
-        ...originalNote,
+      const updatedPerson = {
+        ...originalPerson,
         notes: 'Updated notes only',
         updated_at: '2023-01-01T01:00:00.000Z'
       };
 
-      // Mock the service to return the updated note
-      mockNotesService.updateNote.mockResolvedValueOnce(updatedNote);
+      // Mock the service to return the updated person
+      mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/notes/1')
+        .put('/api/people/1')
         .send(updateData)
         .expect(200);
 
       expect(response.body).toEqual({
         success: true,
-        data: updatedNote
+        data: updatedPerson
       });
 
-      // Verify that updateNote was called with the correct parameters
-      expect(mockNotesService.updateNote).toHaveBeenCalledWith(1, updateData);
+      // Verify that updatePerson was called with the correct parameters
+      expect(mockPeopleService.updatePerson).toHaveBeenCalledWith(1, updateData);
     });
 
     it('should only update notes field, ignoring other fields', async () => {
-      const originalNote = {
+      const originalPerson = {
         id: 1,
         first_name: 'Original',
         last_name: 'Person',
@@ -162,16 +162,16 @@ describe('Notes API', () => {
         updated_at: '2023-01-01T00:00:00.000Z'
       };
 
-      const updatedNote = {
-        ...originalNote,
+      const updatedPerson = {
+        ...originalPerson,
         notes: 'Actually updated notes',
         updated_at: '2023-01-01T01:00:00.000Z'
       };
 
-      mockNotesService.updateNote.mockResolvedValueOnce(updatedNote);
+      mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/notes/1')
+        .put('/api/people/1')
         .send({
           first_name: 'Attempted New First',
           last_name: 'Attempted New Last',
@@ -182,27 +182,27 @@ describe('Notes API', () => {
 
       expect(response.body).toEqual({
         success: true,
-        data: updatedNote
+        data: updatedPerson
       });
 
-      // Verify that updateNote was called with only the notes field
-      expect(mockNotesService.updateNote).toHaveBeenCalledWith(1, { notes: 'Actually updated notes' });
+      // Verify that updatePerson was called with only the notes field
+      expect(mockPeopleService.updatePerson).toHaveBeenCalledWith(1, { notes: 'Actually updated notes' });
     });
 
     it('should reject update with invalid ID', async () => {
       const response = await request(app)
-        .put('/api/notes/invalid')
+        .put('/api/people/invalid')
         .send({ notes: 'Updated notes' })
         .expect(400);
 
       expect(response.body).toEqual({
         success: false,
-        error: 'Invalid note ID'
+        error: 'Invalid person ID'
       });
     });
 
     it('should allow update with notes field', async () => {
-      const originalNote = {
+      const originalPerson = {
         id: 1,
         first_name: 'Original',
         last_name: 'Person',
@@ -216,30 +216,30 @@ describe('Notes API', () => {
         notes: 'Updated notes'
       };
 
-      const updatedNote = {
-        ...originalNote,
+      const updatedPerson = {
+        ...originalPerson,
         notes: 'Updated notes',
         updated_at: '2023-01-01T01:00:00.000Z'
       };
 
-      // Mock the service to return the updated note
-      mockNotesService.updateNote.mockResolvedValueOnce(updatedNote);
+      // Mock the service to return the updated person
+      mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/notes/1')
+        .put('/api/people/1')
         .send(updateData)
         .expect(200);
 
       expect(response.body).toEqual({
         success: true,
-        data: updatedNote
+        data: updatedPerson
       });
     });
   });
 
-  describe('GET /api/notes/export/csv', () => {
+  describe('GET /api/people/export/csv', () => {
     it('should export CSV with correct headers and data', async () => {
-      const mockNotes = [
+      const mockPeople = [
         {
           id: 1,
           first_name: 'John',
@@ -260,10 +260,10 @@ describe('Notes API', () => {
         }
       ];
 
-      mockNotesService.getAllNotes.mockResolvedValueOnce(mockNotes);
+      mockPeopleService.getAllPeople.mockResolvedValueOnce(mockPeople);
 
       const response = await request(app)
-        .get('/api/notes/export/csv')
+        .get('/api/people/export/csv')
         .expect(200);
 
       expect(response.headers['content-type']).toBe('text/csv; charset=utf-8');
@@ -283,10 +283,10 @@ describe('Notes API', () => {
     });
 
     it('should handle empty data', async () => {
-      mockNotesService.getAllNotes.mockResolvedValueOnce([]);
+      mockPeopleService.getAllPeople.mockResolvedValueOnce([]);
 
       const response = await request(app)
-        .get('/api/notes/export/csv')
+        .get('/api/people/export/csv')
         .expect(200);
 
       const csvContent = response.text;
@@ -294,7 +294,7 @@ describe('Notes API', () => {
     });
   });
 
-  describe('GET /api/notes/search', () => {
+  describe('GET /api/people/search', () => {
     it('should return paginated search results', async () => {
       const mockSearchResults = {
         data: [
@@ -314,10 +314,10 @@ describe('Notes API', () => {
         totalPages: 1
       };
 
-      mockNotesService.searchNotes.mockResolvedValueOnce(mockSearchResults);
+      mockPeopleService.searchPeople.mockResolvedValueOnce(mockSearchResults);
 
       const response = await request(app)
-        .get('/api/notes/search')
+        .get('/api/people/search')
         .query({ query: 'policy', page: 1, limit: 10 })
         .expect(200);
 
@@ -336,10 +336,10 @@ describe('Notes API', () => {
         totalPages: 0
       };
 
-      mockNotesService.searchNotes.mockResolvedValueOnce(mockSearchResults);
+      mockPeopleService.searchPeople.mockResolvedValueOnce(mockSearchResults);
 
       const response = await request(app)
-        .get('/api/notes/search')
+        .get('/api/people/search')
         .query({ page: 0, limit: 200 })
         .expect(200);
 

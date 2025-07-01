@@ -1,39 +1,39 @@
 import { Request, Response } from 'express';
-import { notesService } from '../services/notesService';
+import { peopleService } from '../services/peopleService';
 import type {
   CreatePersonRequest,
   UpdatePersonNotesRequest,
   SearchPeopleRequest
 } from '@canvas-tool/shared-types';
 
-export class NotesController {
-  async getAllNotes(req: Request, res: Response): Promise<void> {
+export class PeopleController {
+  async getAllPeople(req: Request, res: Response): Promise<void> {
     try {
-      const notes = await notesService.getAllNotes();
+      const people = await peopleService.getAllPeople();
       res.json({
         success: true,
-        data: notes,
-        count: notes.length
+        data: people,
+        count: people.length
       });
     } catch (error) {
-      console.error('Error in getAllNotes:', error);
+      console.error('Error in getAllPeople:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch notes'
+        error: 'Failed to fetch people'
       });
     }
   }
 
-  async createNote(req: Request, res: Response): Promise<void> {
+  async createPerson(req: Request, res: Response): Promise<void> {
     try {
       const { first_name, last_name, notes, email }: CreatePersonRequest = req.body;
-      const newNote = await notesService.createNote({ first_name, last_name, notes, email });
+      const newPerson = await peopleService.createPerson({ first_name, last_name, notes, email });
       res.status(201).json({
         success: true,
-        data: newNote
+        data: newPerson
       });
     } catch (error) {
-      console.error('Error in createNote:', error);
+      console.error('Error in createPerson:', error);
       
       if (error instanceof Error && error.message.includes('required')) {
         res.status(400).json({
@@ -48,13 +48,13 @@ export class NotesController {
       } else {
         res.status(500).json({
           success: false,
-          error: 'Failed to create note'
+          error: 'Failed to create person'
         });
       }
     }
   }
 
-  async updateNote(req: Request, res: Response): Promise<void> {
+  async updatePerson(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
       const { notes }: UpdatePersonNotesRequest = req.body;
@@ -62,20 +62,20 @@ export class NotesController {
       if (isNaN(id)) {
         res.status(400).json({
           success: false,
-          error: 'Invalid note ID'
+          error: 'Invalid person ID'
         });
         return;
       }
 
-      const updatedNote = await notesService.updateNote(id, { notes });
+      const updatedPerson = await peopleService.updatePerson(id, { notes });
       res.json({
         success: true,
-        data: updatedNote
+        data: updatedPerson
       });
     } catch (error) {
-      console.error('Error in updateNote:', error);
+      console.error('Error in updatePerson:', error);
       
-      if (error instanceof Error && error.message === 'Note not found') {
+      if (error instanceof Error && error.message === 'Person not found') {
         res.status(404).json({
           success: false,
           error: error.message
@@ -83,7 +83,7 @@ export class NotesController {
       } else {
         res.status(500).json({
           success: false,
-          error: 'Failed to update note'
+          error: 'Failed to update person'
         });
       }
     }
@@ -91,11 +91,11 @@ export class NotesController {
 
   async exportCsv(req: Request, res: Response): Promise<void> {
     try {
-      const notes = await notesService.getAllNotes();
+      const people = await peopleService.getAllPeople();
       
       // Generate CSV content
       const csvHeader = 'ID,First Name,Last Name,Email,Notes,Created At,Updated At\n';
-      const csvRows = notes.map(note => {
+      const csvRows = people.map(person => {
         // Escape commas and quotes in the data
         const escapeCsvField = (field: string | null | undefined): string => {
           if (!field) return '';
@@ -107,13 +107,13 @@ export class NotesController {
         };
 
         return [
-          note.id,
-          escapeCsvField(note.first_name),
-          escapeCsvField(note.last_name),
-          escapeCsvField(note.email),
-          escapeCsvField(note.notes),
-          new Date(note.created_at).toISOString(),
-          new Date(note.updated_at).toISOString()
+          person.id,
+          escapeCsvField(person.first_name),
+          escapeCsvField(person.last_name),
+          escapeCsvField(person.email),
+          escapeCsvField(person.notes),
+          new Date(person.created_at).toISOString(),
+          new Date(person.updated_at).toISOString()
         ].join(',');
       }).join('\n');
 
@@ -133,7 +133,7 @@ export class NotesController {
     }
   }
 
-  async searchNotes(req: Request, res: Response): Promise<void> {
+  async searchPeople(req: Request, res: Response): Promise<void> {
     try {
       const { query, page, limit } = req.query;
       
@@ -143,19 +143,19 @@ export class NotesController {
         limit: limit ? parseInt(limit as string) : undefined
       };
 
-      const result = await notesService.searchNotes(searchParams);
+      const result = await peopleService.searchPeople(searchParams);
       res.json({
         success: true,
         ...result
       });
     } catch (error) {
-      console.error('Error in searchNotes:', error);
+      console.error('Error in searchPeople:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to search notes'
+        error: 'Failed to search people'
       });
     }
   }
 }
 
-export const notesController = new NotesController();
+export const peopleController = new PeopleController();

@@ -1,7 +1,7 @@
 import cors from 'cors'
 import express, { Request, Response } from 'express'
 import { pool } from './db'
-import { notesController } from './controllers/notesController'
+import { peopleController } from './controllers/peopleController'
 
 const app = express()
 app.use(cors());
@@ -19,12 +19,12 @@ app.get('/health', async (_req: Request, res: Response): Promise<void> => {
   }
 })
 
-// Notes API routes
-app.get('/api/notes/search', (req: Request, res: Response) => notesController.searchNotes(req, res))
-app.get('/api/notes/export/csv', (req: Request, res: Response) => notesController.exportCsv(req, res))
-app.get('/api/notes', (req: Request, res: Response) => notesController.getAllNotes(req, res))
-app.post('/api/notes', (req: Request, res: Response) => notesController.createNote(req, res))
-app.put('/api/notes/:id', (req: Request, res: Response) => notesController.updateNote(req, res))
+// People API routes
+app.get('/api/people/search', (req: Request, res: Response) => peopleController.searchPeople(req, res))
+app.get('/api/people/export/csv', (req: Request, res: Response) => peopleController.exportCsv(req, res))
+app.get('/api/people', (req: Request, res: Response) => peopleController.getAllPeople(req, res))
+app.post('/api/people', (req: Request, res: Response) => peopleController.createPerson(req, res))
+app.put('/api/people/:id', (req: Request, res: Response) => peopleController.updatePerson(req, res))
 
 app.listen(port, (): void => {
   console.log(`Backend listening on port ${port}`)
