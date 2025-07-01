@@ -22,7 +22,8 @@ export default function EditPerson(): ReactElement {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   
-  const [personName, setPersonName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
 
@@ -38,7 +39,8 @@ export default function EditPerson(): ReactElement {
   // Update form fields when data loads
   useEffect(() => {
     if (noteToEdit) {
-      setPersonName(noteToEdit.person_name)
+      setFirstName(noteToEdit.first_name)
+      setLastName(noteToEdit.last_name)
       setEmail(noteToEdit.email || '')
       setNotes(noteToEdit.notes)
     }
@@ -91,15 +93,25 @@ export default function EditPerson(): ReactElement {
       <Card.Root p={8}>
         <VStack gap={6}>
           <Text fontSize="2xl" fontWeight="bold">
-            Edit Notes for {personName}
+            Edit Notes for {firstName} {lastName}
           </Text>
           
           <Box as="form" onSubmit={handleSubmit} w="100%">
             <VStack gap={4}>
               <Box w="100%">
-                <Text fontSize="sm" fontWeight="medium" mb={2}>Name</Text>
+                <Text fontSize="sm" fontWeight="medium" mb={2}>First Name</Text>
                 <Input
-                  value={personName}
+                  value={firstName}
+                  readOnly
+                  bg="gray.50"
+                  cursor="not-allowed"
+                />
+              </Box>
+
+              <Box w="100%">
+                <Text fontSize="sm" fontWeight="medium" mb={2}>Last Name</Text>
+                <Input
+                  value={lastName}
                   readOnly
                   bg="gray.50"
                   cursor="not-allowed"

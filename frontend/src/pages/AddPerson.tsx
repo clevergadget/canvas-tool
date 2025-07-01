@@ -14,7 +14,8 @@ import type { ReactElement, FormEvent, ChangeEvent } from 'react'
 import { createPerson } from '../services/api'
 
 export default function AddPerson(): ReactElement {
-  const [personName, setPersonName] = useState<string>('')
+  const [firstName, setFirstName] = useState<string>('')
+  const [lastName, setLastName] = useState<string>('')
   const [notes, setNotes] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [emailError, setEmailError] = useState<string>('')
@@ -25,7 +26,8 @@ export default function AddPerson(): ReactElement {
     mutationFn: createPerson,
     onSuccess: () => {
       // Clear form after successful submission
-      setPersonName('')
+      setFirstName('')
+      setLastName('')
       setNotes('')
       setEmail('')
       setEmailError('')
@@ -36,7 +38,7 @@ export default function AddPerson(): ReactElement {
 
   const handleSubmit = (e: FormEvent): void => {
     e.preventDefault()
-    if (!personName.trim()) return
+    if (!firstName.trim() || !lastName.trim()) return
 
     // Validate email if provided
     if (email.trim() && !isValidEmail(email.trim())) {
@@ -45,7 +47,8 @@ export default function AddPerson(): ReactElement {
     }
 
     addPersonMutation.mutate({
-      person_name: personName.trim(),
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
       notes: notes.trim() || undefined,
       email: email.trim() || undefined,
     })
@@ -56,8 +59,12 @@ export default function AddPerson(): ReactElement {
     return emailRegex.test(email)
   }
 
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setPersonName(e.target.value)
+  const handleFirstNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setFirstName(e.target.value)
+  }
+
+  const handleLastNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setLastName(e.target.value)
   }
 
   const handleNotesChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
@@ -85,13 +92,27 @@ export default function AddPerson(): ReactElement {
           <VStack gap={4}>
             <Box w="100%">
               <Text mb={2} fontWeight="medium">
-                Person's Name *
+                First Name *
               </Text>
               <Input
                 type="text"
-                value={personName}
-                onChange={handleNameChange}
-                placeholder="Enter the person's full name"
+                value={firstName}
+                onChange={handleFirstNameChange}
+                placeholder="Enter the person's first name"
+                disabled={addPersonMutation.isPending}
+                required
+              />
+            </Box>
+
+            <Box w="100%">
+              <Text mb={2} fontWeight="medium">
+                Last Name *
+              </Text>
+              <Input
+                type="text"
+                value={lastName}
+                onChange={handleLastNameChange}
+                placeholder="Enter the person's last name"
                 disabled={addPersonMutation.isPending}
                 required
               />
@@ -134,7 +155,7 @@ export default function AddPerson(): ReactElement {
               size="lg"
               loading={addPersonMutation.isPending}
               loadingText="Saving..."
-              disabled={!personName.trim()}
+              disabled={!firstName.trim() || !lastName.trim()}
               w="100%"
             >
               Add Person

@@ -1,7 +1,8 @@
 // Core domain types
 export interface Person {
   id: number;
-  person_name: string;
+  first_name: string;
+  last_name: string;
   email?: string;
   notes: string;
   created_at: string;
@@ -10,7 +11,8 @@ export interface Person {
 
 // API Request types
 export interface CreatePersonRequest {
-  person_name: string;
+  first_name: string;
+  last_name: string;
   email?: string;
   notes?: string;
 }

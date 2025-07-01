@@ -12,7 +12,7 @@ export class NotesService {
   async getAllNotes(): Promise<Person[]> {
     try {
       const [rows] = await pool.execute<RowDataPacket[]>(
-        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes ORDER BY created_at DESC'
+        'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record ORDER BY created_at DESC'
       );
       return rows as Person[];
     } catch (error) {
@@ -23,11 +23,15 @@ export class NotesService {
 
   async createNote(noteData: CreatePersonRequest): Promise<Person> {
     try {
-      const { person_name, email, notes } = noteData;
+      const { first_name, last_name, email, notes } = noteData;
       
       // Validate input
-      if (!person_name.trim()) {
-        throw new Error('Person name is required');
+      if (!first_name.trim()) {
+        throw new Error('First name is required');
+      }
+      
+      if (!last_name.trim()) {
+        throw new Error('Last name is required');
       }
 
       // Basic email validation if provided
@@ -36,13 +40,13 @@ export class NotesService {
       }
 
       const [result] = await pool.execute<ResultSetHeader>(
-        'INSERT INTO canvassing_notes (person_name, email, notes) VALUES (?, ?, ?)',
-        [person_name.trim(), email?.trim() || null, notes || '']
+        'INSERT INTO canvassing_record (first_name, last_name, email, notes) VALUES (?, ?, ?, ?)',
+        [first_name.trim(), last_name.trim(), email?.trim() || null, notes || '']
       );
 
       // Fetch the created note
       const [rows] = await pool.execute<RowDataPacket[]>(
-        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes WHERE id = ?',
+        'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record WHERE id = ?',
         [result.insertId]
       );
 
@@ -59,7 +63,7 @@ export class NotesService {
       
       // First, fetch the existing note to preserve original data
       const [existingRows] = await pool.execute<RowDataPacket[]>(
-        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes WHERE id = ?',
+        'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record WHERE id = ?',
         [id]
       );
 
@@ -69,9 +73,9 @@ export class NotesService {
 
       const existingNote = existingRows[0] as Person;
 
-      // Only update the notes field, preserve original person_name and email
+      // Only update the notes field, preserve original first_name, last_name and email
       const [result] = await pool.execute<ResultSetHeader>(
-        'UPDATE canvassing_notes SET notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        'UPDATE canvassing_record SET notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
         [notes || '', id]
       );
 
@@ -81,7 +85,7 @@ export class NotesService {
 
       // Fetch the updated note
       const [rows] = await pool.execute<RowDataPacket[]>(
-        'SELECT id, person_name, email, notes, created_at, updated_at FROM canvassing_notes WHERE id = ?',
+        'SELECT id, first_name, last_name, email, notes, created_at, updated_at FROM canvassing_record WHERE id = ?',
         [id]
       );
 
@@ -101,17 +105,17 @@ export class NotesService {
 
       const searchTerm = query.trim() ? `%${query.trim()}%` : '%';
 
-      const whereClause = 'WHERE person_name LIKE ? OR email LIKE ? OR notes LIKE ?';
-      const countParams = [searchTerm, searchTerm, searchTerm];
-      const dataParams = [searchTerm, searchTerm, searchTerm, String(limit), String(offset)];
+      const whereClause = 'WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR notes LIKE ?';
+      const countParams = [searchTerm, searchTerm, searchTerm, searchTerm];
+      const dataParams = [searchTerm, searchTerm, searchTerm, searchTerm, String(limit), String(offset)];
 
-      const countQuery = `SELECT COUNT(*) as total FROM canvassing_notes ${whereClause}`;
+      const countQuery = `SELECT COUNT(*) as total FROM canvassing_record ${whereClause}`;
       const [countRows] = await pool.execute<RowDataPacket[]>(countQuery, countParams);
       const total = countRows[0].total as number;
 
       const dataQuery = `
-        SELECT id, person_name, email, notes, created_at, updated_at 
-        FROM canvassing_notes 
+        SELECT id, first_name, last_name, email, notes, created_at, updated_at 
+        FROM canvassing_record 
         ${whereClause}
         ORDER BY created_at DESC 
         LIMIT ? OFFSET ?

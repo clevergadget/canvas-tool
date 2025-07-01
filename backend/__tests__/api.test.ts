@@ -51,14 +51,16 @@ describe('Notes API', () => {
   describe('POST /api/notes', () => {
     it('should create a note with valid data', async () => {
       const noteData = {
-        person_name: 'Test Person',
+        first_name: 'Test',
+        last_name: 'Person',
         email: 'test@example.com',
         notes: 'Test notes'
       };
 
       const mockNote = {
         id: 1,
-        person_name: 'Test Person',
+        first_name: 'Test',
+        last_name: 'Person',
         email: 'test@example.com',
         notes: 'Test notes',
         created_at: '2023-01-01T00:00:00.000Z',
@@ -79,15 +81,27 @@ describe('Notes API', () => {
       });
     });
 
-    it('should reject note without person_name', async () => {
+    it('should reject note without first_name', async () => {
       const response = await request(app)
         .post('/api/notes')
-        .send({ email: 'test@example.com', notes: 'Test notes' })
+        .send({ last_name: 'Person', email: 'test@example.com', notes: 'Test notes' })
         .expect(400);
 
       expect(response.body).toEqual({
         success: false,
-        error: 'Person name is required'
+        error: 'First name is required'
+      });
+    });
+
+    it('should reject note without last_name', async () => {
+      const response = await request(app)
+        .post('/api/notes')
+        .send({ first_name: 'Test', email: 'test@example.com', notes: 'Test notes' })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: 'Last name is required'
       });
     });
   });
@@ -96,7 +110,8 @@ describe('Notes API', () => {
     it('should update only the notes field', async () => {
       const originalNote = {
         id: 1,
-        person_name: 'Original Person',
+        first_name: 'Original',
+        last_name: 'Person',
         email: 'original@example.com',
         notes: 'Original notes',
         created_at: '2023-01-01T00:00:00.000Z',
@@ -130,10 +145,11 @@ describe('Notes API', () => {
       expect(mockNotesService.updateNote).toHaveBeenCalledWith(1, updateData);
     });
 
-    it('should ignore attempts to update person_name and email, only updating notes', async () => {
+    it('should ignore attempts to update first_name, last_name and email, only updating notes', async () => {
       const originalNote = {
         id: 1,
-        person_name: 'Original Person',
+        first_name: 'Original',
+        last_name: 'Person',
         email: 'original@example.com',
         notes: 'Original notes',
         created_at: '2023-01-01T00:00:00.000Z',
@@ -142,7 +158,8 @@ describe('Notes API', () => {
 
       // Attempt to update all fields, but only notes should be processed
       const updateData = {
-        person_name: 'Attempted New Name',
+        first_name: 'Attempted New First',
+        last_name: 'Attempted New Last',
         email: 'attempted@newemail.com',
         notes: 'Actually updated notes'
       };
@@ -200,7 +217,8 @@ describe('Notes API', () => {
       const mockNotes = [
         {
           id: 1,
-          person_name: 'John Doe',
+          first_name: 'John',
+          last_name: 'Doe',
           email: 'john@example.com',
           notes: 'Great conversation about policy',
           created_at: '2023-01-01T00:00:00.000Z',
@@ -208,7 +226,8 @@ describe('Notes API', () => {
         },
         {
           id: 2,
-          person_name: 'Jane Smith',
+          first_name: 'Jane',
+          last_name: 'Smith',
           email: undefined,
           notes: 'Interested in volunteering, has "special" needs',
           created_at: '2023-01-02T00:00:00.000Z',
@@ -229,13 +248,13 @@ describe('Notes API', () => {
       const lines = csvContent.split('\n');
       
       // Check header
-      expect(lines[0]).toBe('ID,Name,Email,Notes,Created At,Updated At');
+      expect(lines[0]).toBe('ID,First Name,Last Name,Email,Notes,Created At,Updated At');
       
       // Check first data row
-      expect(lines[1]).toBe('1,John Doe,john@example.com,Great conversation about policy,2023-01-01T00:00:00.000Z,2023-01-01T00:00:00.000Z');
+      expect(lines[1]).toBe('1,John,Doe,john@example.com,Great conversation about policy,2023-01-01T00:00:00.000Z,2023-01-01T00:00:00.000Z');
       
       // Check second data row (with escaped quotes and empty email)
-      expect(lines[2]).toBe('2,Jane Smith,,"Interested in volunteering, has ""special"" needs",2023-01-02T00:00:00.000Z,2023-01-02T00:00:00.000Z');
+      expect(lines[2]).toBe('2,Jane,Smith,,"Interested in volunteering, has ""special"" needs",2023-01-02T00:00:00.000Z,2023-01-02T00:00:00.000Z');
     });
 
     it('should handle empty data', async () => {
@@ -246,7 +265,7 @@ describe('Notes API', () => {
         .expect(200);
 
       const csvContent = response.text;
-      expect(csvContent).toBe('ID,Name,Email,Notes,Created At,Updated At\n');
+      expect(csvContent).toBe('ID,First Name,Last Name,Email,Notes,Created At,Updated At\n');
     });
   });
 
@@ -256,7 +275,8 @@ describe('Notes API', () => {
         data: [
           {
             id: 1,
-            person_name: 'John Doe',
+            first_name: 'John',
+            last_name: 'Doe',
             email: 'john@example.com',
             notes: 'Discussed policy details',
             created_at: '2023-01-01T00:00:00.000Z',

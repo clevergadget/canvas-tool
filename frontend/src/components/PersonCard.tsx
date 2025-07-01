@@ -20,7 +20,7 @@ export const PersonCard = memo(function PersonCard({ person }: PersonCardProps) 
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <VStack gap={1} align="start">
             <Text fontSize="lg" fontWeight="bold">
-              {person.person_name}
+              {person.first_name} {person.last_name}
             </Text>
             {person.email && (
               <Text fontSize="sm" color="gray.600">
