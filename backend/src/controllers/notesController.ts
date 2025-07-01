@@ -27,24 +27,6 @@ export class NotesController {
   async createNote(req: Request, res: Response): Promise<void> {
     try {
       const { first_name, last_name, notes, email }: CreatePersonRequest = req.body;
-
-      // Basic validation
-      if (!first_name) {
-        res.status(400).json({
-          success: false,
-          error: 'First name is required'
-        });
-        return;
-      }
-
-      if (!last_name) {
-        res.status(400).json({
-          success: false,
-          error: 'Last name is required'
-        });
-        return;
-      }
-
       const newNote = await notesService.createNote({ first_name, last_name, notes, email });
       res.status(201).json({
         success: true,
@@ -53,7 +35,12 @@ export class NotesController {
     } catch (error) {
       console.error('Error in createNote:', error);
       
-      if (error instanceof Error && (error.message === 'First name is required' || error.message === 'Last name is required')) {
+      if (error instanceof Error && error.message.includes('required')) {
+        res.status(400).json({
+          success: false,
+          error: error.message
+        });
+      } else if (error instanceof Error && error.message.includes('valid email')) {
         res.status(400).json({
           success: false,
           error: error.message
@@ -76,14 +63,6 @@ export class NotesController {
         res.status(400).json({
           success: false,
           error: 'Invalid note ID'
-        });
-        return;
-      }
-
-      if (notes === undefined) {
-        res.status(400).json({
-          success: false,
-          error: 'Notes field is required'
         });
         return;
       }
@@ -163,23 +142,6 @@ export class NotesController {
         page: page ? parseInt(page as string) : undefined,
         limit: limit ? parseInt(limit as string) : undefined
       };
-
-      // Validate pagination parameters
-      if (searchParams.page && searchParams.page < 1) {
-        res.status(400).json({
-          success: false,
-          error: 'Page must be greater than 0'
-        });
-        return;
-      }
-
-      if (searchParams.limit && (searchParams.limit < 1 || searchParams.limit > 100)) {
-        res.status(400).json({
-          success: false,
-          error: 'Limit must be between 1 and 100'
-        });
-        return;
-      }
 
       const result = await notesService.searchNotes(searchParams);
       res.json({
