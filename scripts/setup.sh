@@ -42,8 +42,16 @@ echo -e "\n${YELLOW}Waiting for database to be ready...${NC}"
 max_attempts=45  # Increase max attempts to give more time
 attempt=0
 
+# Find the database container name dynamically
+DB_CONTAINER=$(docker ps --format "{{.Names}}" | grep -E "db-1$|_db_1$" | head -1)
+if [ -z "$DB_CONTAINER" ]; then
+  echo "Could not find database container. Please check that Docker containers are running."
+  exit 1
+fi
+echo "Found database container: $DB_CONTAINER"
+
 while [ $attempt -lt $max_attempts ]; do
-  if docker exec voter-canvassing-tool-db-1 mysqladmin ping -h localhost -u root -pexample --silent 2>/dev/null; then
+  if docker exec "$DB_CONTAINER" mysqladmin ping -h localhost -u root -pexample --silent 2>/dev/null; then
     echo -e "${GREEN}✓ Database is ready${NC}"
     break
   fi
@@ -59,37 +67,36 @@ while [ $attempt -lt $max_attempts ]; do
   fi
 done
 
-# Step 4: Seed the database
-echo -e "\n${YELLOW}Seeding the database...${NC}"
+# Step 4: Wait for database initialization to complete
+echo -e "\n${YELLOW}Waiting for database initialization to complete...${NC}"
 
-# Wait additional time for MySQL to fully initialize all plugins
-echo "Giving MySQL additional time to initialize plugins..."
+# Wait additional time for MySQL to fully initialize and run init scripts
+echo "Giving MySQL time to run initialization scripts..."
 sleep 10
 
-docker exec voter-canvassing-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
-if [ $? -ne 0 ]; then
-  echo "Failed to seed the database. Please check the Docker logs."
-  exit 1
-fi
-echo -e "${GREEN}✓ Database seeded successfully${NC}"
+echo -e "${GREEN}✓ Database initialization completed${NC}"
 
 # Step 5: Verify services are running
 echo -e "\n${YELLOW}Verifying services...${NC}"
 
+# Find container names dynamically
+BACKEND_CONTAINER=$(docker ps --format "{{.Names}}" | grep -E "backend-1$|_backend_1$" | head -1)
+FRONTEND_CONTAINER=$(docker ps --format "{{.Names}}" | grep -E "frontend-1$|_frontend_1$" | head -1)
+
 # Check database container
-if ! docker ps | grep -q "voter-canvassing-tool-db-1"; then
+if [ -z "$DB_CONTAINER" ] || ! docker ps | grep -q "$DB_CONTAINER"; then
   echo "Database container is not running. Please check Docker logs."
   exit 1
 fi
 
 # Check backend container
-if ! docker ps | grep -q "voter-canvassing-tool-backend-1"; then
+if [ -z "$BACKEND_CONTAINER" ] || ! docker ps | grep -q "$BACKEND_CONTAINER"; then
   echo "Backend container is not running. Please check Docker logs."
   exit 1
 fi
 
 # Check frontend container
-if ! docker ps | grep -q "voter-canvassing-tool-frontend-1"; then
+if [ -z "$FRONTEND_CONTAINER" ] || ! docker ps | grep -q "$FRONTEND_CONTAINER"; then
   echo "Frontend container is not running. Please check Docker logs."
   exit 1
 fi

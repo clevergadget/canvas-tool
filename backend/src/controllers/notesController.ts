@@ -4,7 +4,7 @@ import type {
   CreatePersonRequest,
   UpdatePersonNotesRequest,
   SearchPeopleRequest
-} from '@voter-canvassing-tool/shared-types';
+} from '@canvas-tool/shared-types';
 
 export class NotesController {
   async getAllNotes(req: Request, res: Response): Promise<void> {
@@ -26,18 +26,26 @@ export class NotesController {
 
   async createNote(req: Request, res: Response): Promise<void> {
     try {
-      const { person_name, notes, email }: CreatePersonRequest = req.body;
+      const { first_name, last_name, notes, email }: CreatePersonRequest = req.body;
 
       // Basic validation
-      if (!person_name) {
+      if (!first_name) {
         res.status(400).json({
           success: false,
-          error: 'Person name is required'
+          error: 'First name is required'
         });
         return;
       }
 
-      const newNote = await notesService.createNote({ person_name, notes, email });
+      if (!last_name) {
+        res.status(400).json({
+          success: false,
+          error: 'Last name is required'
+        });
+        return;
+      }
+
+      const newNote = await notesService.createNote({ first_name, last_name, notes, email });
       res.status(201).json({
         success: true,
         data: newNote
@@ -45,7 +53,7 @@ export class NotesController {
     } catch (error) {
       console.error('Error in createNote:', error);
       
-      if (error instanceof Error && error.message === 'Person name is required') {
+      if (error instanceof Error && (error.message === 'First name is required' || error.message === 'Last name is required')) {
         res.status(400).json({
           success: false,
           error: error.message
@@ -107,7 +115,7 @@ export class NotesController {
       const notes = await notesService.getAllNotes();
       
       // Generate CSV content
-      const csvHeader = 'ID,Name,Email,Notes,Created At,Updated At\n';
+      const csvHeader = 'ID,First Name,Last Name,Email,Notes,Created At,Updated At\n';
       const csvRows = notes.map(note => {
         // Escape commas and quotes in the data
         const escapeCsvField = (field: string | null | undefined): string => {
@@ -121,7 +129,8 @@ export class NotesController {
 
         return [
           note.id,
-          escapeCsvField(note.person_name),
+          escapeCsvField(note.first_name),
+          escapeCsvField(note.last_name),
           escapeCsvField(note.email),
           escapeCsvField(note.notes),
           new Date(note.created_at).toISOString(),

@@ -15,73 +15,70 @@ A minimal canvassing web app for Empower's take-home assignment.
 ## Running Locally
 
 ### Prerequisites
-- Node.js v22+ (see `.nvmrc`)
+- Node.js v22.12.0 or higher
 - npm v10+
-- Docker (for local MySQL and orchestration)
+- **Docker Desktop running** (required for MySQL database and full-stack orchestration)
 
-### Quick Start
-From the project root, run:
+### Recommended Quick Start (Full Stack)
+**This is the primary way to run the application for evaluation:**
+
+```bash
+npm run setup
+```
+
+This single command will:
+1. Install all dependencies
+2. Build and start all Docker containers (frontend, backend, database)
+3. Wait for the database to be ready
+4. Seed the database with sample data
+5. Display success message with access URLs
+
+**Application will be available at:**
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:3001
+- **Database:** localhost:3306
+
+When you're done, clean up everything with:
+
+```bash
+npm run cleanup
+```
+
+This stops and removes all Docker containers created for this project.
+
+### Alternative Development Mode (Frontend/Backend Only)
+If you want to run just the frontend and backend without Docker:
 
 ```bash
 npm install
 npm run dev
 ```
 
-This will start both the frontend (on port 5173) and backend (on port 3001) in parallel.
-
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3001
-
-To run the full stack (frontend, backend, and MySQL database) with Docker Compose and seed the database in one command:
-
-```bash
-npm run setup
-```
-
-This will:
-1. Install dependencies
-2. Build and start all Docker containers
-3. Wait for the database to be ready
-4. Seed the database with sample data
-5. Display success message with access URLs
-
-Alternatively, you can manually run the full stack with Docker Compose:
-
-```bash
-docker-compose up --build
-```
-
-When you're done, you can clean up all Docker containers with:
-
-```bash
-npm run cleanup
-```
-
-This will stop and remove all Docker containers created for this project.
+This starts both the frontend (port 5173) and backend (port 3001) in parallel, but requires a separate MySQL instance.
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
 - MySQL: localhost:3306 (see `database/docker-mysql-init.sql` for schema)
 
 ### Scripts
-- `npm run dev` — Start both frontend and backend
+- **`npm run setup`** — **Primary command:** One-command setup that installs dependencies, starts all containers, and seeds the database
+- **`npm run cleanup`** — **Primary cleanup:** Stop and remove all Docker containers
+- `npm run dev` — Start both frontend and backend (development mode, requires separate MySQL)
 - `npm run dev:frontend` — Start only the frontend
 - `npm run dev:backend` — Start only the backend
 - `npm test` — Run backend tests
-- `npm run seed-db` — Seed the database with sample data
-- `npm run setup` — One-command setup: installs dependencies, starts all containers, and seeds the database
-- `npm run cleanup` — Stop and remove all Docker containers
+- `npm run seed-db` — Seed the database with sample data (when containers are running)
 
 ### Database Commands (while running with Docker Compose)
 
 Connect to MySQL shell:
 ```bash
-docker exec -it voter-canvassing-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
+docker exec -it canvas-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
 ```
 
 Seed the database with sample data:
 ```bash
-docker exec -it voter-canvassing-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
+docker exec -it canvas-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
 ```
 
 ### Testing
@@ -96,7 +93,7 @@ Tests use Jest and supertest to validate API endpoints.
 
 ### API Endpoints
 - `GET /api/notes` — Get all canvassing notes
-- `POST /api/notes` — Create a new note (requires `person_name` and optional `notes`)
+- `POST /api/notes` — Create a new note (requires `first_name`, `last_name`, optional `email` and `notes`)
 - `PUT /api/notes/:id` — Update a note (only `notes` field can be modified)
 - `GET /api/notes/export/csv` — Export all notes as CSV file
 - `GET /api/notes/search` — Search notes with pagination (supports query, page, limit parameters)
@@ -104,7 +101,6 @@ Tests use Jest and supertest to validate API endpoints.
 
 ## What is in the current version?
 - Clean project structure with separate `frontend`, `backend`, and `database` directories
-- `.nvmrc` for consistent Node.js version (v22.12.0)
 - **Frontend:**
   - Vite + React + TypeScript app
   - Chakra UI with custom theme

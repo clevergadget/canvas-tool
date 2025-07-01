@@ -1,5 +1,5 @@
 {
-  "name": "@voter-canvassing-tool/shared-types",
+  "name": "@canvas-tool/shared-types",
   "version": "1.0.0",
   "description": "Shared TypeScript types for the voter canvassing tool",
   "main": "dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "voter-canvassing-tool",
+  "name": "canvas-tool",
   "version": "1.0.0",
   "description": "A minimal canvassing web app for Empower's take-home assignment.",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "test": "cd backend && npm test",
     "build:shared-types": "cd shared-types && npm install && npm run build",
-    "seed-db": "docker exec voter-canvassing-tool-db-1 sh -c \"mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql\"",
+    "seed-db": "docker exec canvas-tool-db-1 sh -c \"mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql\"",
     "setup": "bash scripts/setup.sh",
     "cleanup": "bash scripts/cleanup.sh"
   },

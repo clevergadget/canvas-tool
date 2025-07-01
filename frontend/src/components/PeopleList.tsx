@@ -1,7 +1,7 @@
 import { VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { PersonCard } from './PersonCard'
-import type { Person } from '@voter-canvassing-tool/shared-types'
+import type { Person } from '@canvas-tool/shared-types'
 
 interface PeopleListProps {
   people: Person[]
