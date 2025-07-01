@@ -92,11 +92,11 @@ npm test
 Tests use Jest and supertest to validate API endpoints.
 
 ### API Endpoints
-- `GET /api/notes` — Get all canvassing notes
-- `POST /api/notes` — Create a new note (requires `first_name`, `last_name`, optional `email` and `notes`)
-- `PUT /api/notes/:id` — Update a note (only `notes` field can be modified)
-- `GET /api/notes/export/csv` — Export all notes as CSV file
-- `GET /api/notes/search` — Search notes with pagination (supports query, page, limit parameters)
+- `GET /api/people` — Get all canvassing people records
+- `POST /api/people` — Create a new person (requires `first_name`, `last_name`, optional `email` and `notes`)
+- `PUT /api/people/:id` — Update a person (only `notes` field can be modified)
+- `GET /api/people/export/csv` — Export all people as CSV file
+- `GET /api/people/search` — Search people with pagination (supports query, page, limit parameters)
 - `GET /health` — Health check (backend + database status)
 
 ## What is in the current version?
@@ -105,7 +105,7 @@ Tests use Jest and supertest to validate API endpoints.
   - Vite + React + TypeScript app
   - Chakra UI with custom theme
   - TanStack Query for data fetching
-  - Canvassing note management: add notes form and view all notes page
+  - Canvassing person management: add people form and view all people page
   - React Router DOM for navigation
   - Responsive design
   - Search functionality with pagination
@@ -115,13 +115,13 @@ Tests use Jest and supertest to validate API endpoints.
 - **Backend:**
   - Express server with health check endpoint
   - MySQL connection via Docker Compose
-  - REST API endpoints for canvassing notes (GET, POST, PUT, Search, Export CSV)
+  - REST API endpoints for canvassing people (GET, POST, PUT, Search, Export CSV)
   - TypeScript throughout
   - Test suite using Jest
   - Field-level security for updates (preventing modification of person name and email)
 - **Database:**
   - MySQL schema and init script
-  - Canvassing notes table
+  - Canvassing people table
   - Sample seed data for testing search functionality
 - Clean, readable code focused on the core requirements
 
