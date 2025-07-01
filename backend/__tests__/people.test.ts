@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import { peopleController } from '../src/controllers/peopleController';
 import { peopleService } from '../src/services/peopleService';
+import { createMockPerson, createMockPersonData, createMockSearchResult, createMockPeople } from './helpers/testData';
+import { TEST_CONSTANTS } from './helpers/constants';
 
 // Mock the database service
 jest.mock('../src/services/peopleService');
@@ -15,11 +17,11 @@ const createTestApp = () => {
   app.use(express.json());
   
   // Add the routes we want to test
-  app.get('/api/people', (req, res) => peopleController.getAllPeople(req, res));
-  app.post('/api/people', (req, res) => peopleController.createPerson(req, res));
-  app.put('/api/people/:id', (req, res) => peopleController.updatePerson(req, res));
-  app.get('/api/people/export/csv', (req, res) => peopleController.exportCsv(req, res));
-  app.get('/api/people/search', (req, res) => peopleController.searchPeople(req, res));
+  app.get(TEST_CONSTANTS.ENDPOINTS.PEOPLE, (req, res) => peopleController.getAllPeople(req, res));
+  app.post(TEST_CONSTANTS.ENDPOINTS.PEOPLE, (req, res) => peopleController.createPerson(req, res));
+  app.put(`${TEST_CONSTANTS.ENDPOINTS.PEOPLE}/:id`, (req, res) => peopleController.updatePerson(req, res));
+  app.get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_EXPORT, (req, res) => peopleController.exportCsv(req, res));
+  app.get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_SEARCH, (req, res) => peopleController.searchPeople(req, res));
   
   return app;
 };
@@ -37,8 +39,8 @@ describe('People API', () => {
       mockPeopleService.getAllPeople.mockResolvedValueOnce([]);
 
       const response = await request(app)
-        .get('/api/people')
-        .expect(200);
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE)
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,
@@ -50,30 +52,16 @@ describe('People API', () => {
 
   describe('POST /api/people', () => {
     it('should create a person with valid data', async () => {
-      const personData = {
-        first_name: 'Test',
-        last_name: 'Person',
-        email: 'test@example.com',
-        notes: 'Test notes'
-      };
-
-      const mockPerson = {
-        id: 1,
-        first_name: 'Test',
-        last_name: 'Person',
-        email: 'test@example.com',
-        notes: 'Test notes',
-        created_at: '2023-01-01T00:00:00.000Z',
-        updated_at: '2023-01-01T00:00:00.000Z'
-      };
+      const personData = createMockPersonData();
+      const mockPerson = createMockPerson();
 
       // Mock the service to return the created person
       mockPeopleService.createPerson.mockResolvedValueOnce(mockPerson);
 
       const response = await request(app)
-        .post('/api/people')
+        .post(TEST_CONSTANTS.ENDPOINTS.PEOPLE)
         .send(personData)
-        .expect(201);
+        .expect(TEST_CONSTANTS.STATUS.CREATED);
 
       expect(response.body).toEqual({
         success: true,
@@ -85,10 +73,11 @@ describe('People API', () => {
       // Mock the service to throw an error
       mockPeopleService.createPerson.mockRejectedValueOnce(new Error('First name is required'));
 
+      const personData = createMockPersonData({ first_name: undefined });
       const response = await request(app)
-        .post('/api/people')
-        .send({ last_name: 'Person', email: 'test@example.com', notes: 'Test notes' })
-        .expect(400);
+        .post(TEST_CONSTANTS.ENDPOINTS.PEOPLE)
+        .send(personData)
+        .expect(TEST_CONSTANTS.STATUS.BAD_REQUEST);
 
       expect(response.body).toEqual({
         success: false,
@@ -100,10 +89,11 @@ describe('People API', () => {
       // Mock the service to throw an error
       mockPeopleService.createPerson.mockRejectedValueOnce(new Error('Last name is required'));
 
+      const personData = createMockPersonData({ last_name: undefined });
       const response = await request(app)
-        .post('/api/people')
-        .send({ first_name: 'Test', email: 'test@example.com', notes: 'Test notes' })
-        .expect(400);
+        .post(TEST_CONSTANTS.ENDPOINTS.PEOPLE)
+        .send(personData)
+        .expect(TEST_CONSTANTS.STATUS.BAD_REQUEST);
 
       expect(response.body).toEqual({
         success: false,
@@ -112,35 +102,50 @@ describe('People API', () => {
     });
   });
 
+  describe('Error handling', () => {
+    it('should handle service errors gracefully in getAllPeople', async () => {
+      mockPeopleService.getAllPeople.mockRejectedValueOnce(new Error('Database connection failed'));
+
+      const response = await request(app)
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE)
+        .expect(TEST_CONSTANTS.STATUS.SERVER_ERROR);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: 'Failed to fetch people'
+      });
+    });
+
+    it('should handle service errors gracefully in export CSV', async () => {
+      mockPeopleService.getAllPeople.mockRejectedValueOnce(new Error('Database error'));
+
+      const response = await request(app)
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_EXPORT)
+        .expect(TEST_CONSTANTS.STATUS.SERVER_ERROR);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: 'Failed to export CSV'
+      });
+    });
+  });
+
   describe('PUT /api/people/:id', () => {
     it('should update only the notes field', async () => {
-      const originalPerson = {
-        id: 1,
-        first_name: 'Original',
-        last_name: 'Person',
-        email: 'original@example.com',
-        notes: 'Original notes',
-        created_at: '2023-01-01T00:00:00.000Z',
-        updated_at: '2023-01-01T00:00:00.000Z'
-      };
-
-      const updateData = {
-        notes: 'Updated notes only' // Only notes can be updated
-      };
-
-      const updatedPerson = {
-        ...originalPerson,
+      const originalPerson = createMockPerson();
+      const updateData = { notes: 'Updated notes only' };
+      const updatedPerson = createMockPerson({
         notes: 'Updated notes only',
-        updated_at: '2023-01-01T01:00:00.000Z'
-      };
+        updated_at: new Date('2024-01-01T01:00:00.000Z').toISOString()
+      });
 
       // Mock the service to return the updated person
       mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/people/1')
+        .put(`${TEST_CONSTANTS.ENDPOINTS.PEOPLE}/${TEST_CONSTANTS.DEFAULT_PERSON_ID}`)
         .send(updateData)
-        .expect(200);
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,
@@ -152,33 +157,22 @@ describe('People API', () => {
     });
 
     it('should only update notes field, ignoring other fields', async () => {
-      const originalPerson = {
-        id: 1,
-        first_name: 'Original',
-        last_name: 'Person',
-        email: 'original@example.com',
-        notes: 'Original notes',
-        created_at: '2023-01-01T00:00:00.000Z',
-        updated_at: '2023-01-01T00:00:00.000Z'
-      };
-
-      const updatedPerson = {
-        ...originalPerson,
+      const updatedPerson = createMockPerson({
         notes: 'Actually updated notes',
-        updated_at: '2023-01-01T01:00:00.000Z'
-      };
+        updated_at: new Date('2024-01-01T01:00:00.000Z').toISOString()
+      });
 
       mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/people/1')
+        .put(`${TEST_CONSTANTS.ENDPOINTS.PEOPLE}/${TEST_CONSTANTS.DEFAULT_PERSON_ID}`)
         .send({
           first_name: 'Attempted New First',
           last_name: 'Attempted New Last',
           email: 'attempted@newemail.com',
           notes: 'Actually updated notes'
         })
-        .expect(200);
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,
@@ -191,9 +185,9 @@ describe('People API', () => {
 
     it('should reject update with invalid ID', async () => {
       const response = await request(app)
-        .put('/api/people/invalid')
+        .put(`${TEST_CONSTANTS.ENDPOINTS.PEOPLE}/invalid`)
         .send({ notes: 'Updated notes' })
-        .expect(400);
+        .expect(TEST_CONSTANTS.STATUS.BAD_REQUEST);
 
       expect(response.body).toEqual({
         success: false,
@@ -202,33 +196,19 @@ describe('People API', () => {
     });
 
     it('should allow update with notes field', async () => {
-      const originalPerson = {
-        id: 1,
-        first_name: 'Original',
-        last_name: 'Person',
-        email: 'original@example.com',
-        notes: 'Original notes',
-        created_at: '2023-01-01T00:00:00.000Z',
-        updated_at: '2023-01-01T00:00:00.000Z'
-      };
-
-      const updateData = {
-        notes: 'Updated notes'
-      };
-
-      const updatedPerson = {
-        ...originalPerson,
+      const updateData = { notes: 'Updated notes' };
+      const updatedPerson = createMockPerson({
         notes: 'Updated notes',
-        updated_at: '2023-01-01T01:00:00.000Z'
-      };
+        updated_at: new Date('2024-01-01T01:00:00.000Z').toISOString()
+      });
 
       // Mock the service to return the updated person
       mockPeopleService.updatePerson.mockResolvedValueOnce(updatedPerson);
 
       const response = await request(app)
-        .put('/api/people/1')
+        .put(`${TEST_CONSTANTS.ENDPOINTS.PEOPLE}/${TEST_CONSTANTS.DEFAULT_PERSON_ID}`)
         .send(updateData)
-        .expect(200);
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,
@@ -240,31 +220,29 @@ describe('People API', () => {
   describe('GET /api/people/export/csv', () => {
     it('should export CSV with correct headers and data', async () => {
       const mockPeople = [
-        {
+        createMockPerson({
           id: 1,
           first_name: 'John',
           last_name: 'Doe',
           email: 'john@example.com',
-          notes: 'Great conversation about policy',
-          created_at: '2023-01-01T00:00:00.000Z',
-          updated_at: '2023-01-01T00:00:00.000Z'
-        },
-        {
+          notes: 'Great conversation about policy'
+        }),
+        createMockPerson({
           id: 2,
           first_name: 'Jane',
           last_name: 'Smith',
           email: undefined,
           notes: 'Interested in volunteering, has "special" needs',
-          created_at: '2023-01-02T00:00:00.000Z',
-          updated_at: '2023-01-02T00:00:00.000Z'
-        }
+          created_at: new Date('2024-01-02T00:00:00.000Z').toISOString(),
+          updated_at: new Date('2024-01-02T00:00:00.000Z').toISOString()
+        })
       ];
 
       mockPeopleService.getAllPeople.mockResolvedValueOnce(mockPeople);
 
       const response = await request(app)
-        .get('/api/people/export/csv')
-        .expect(200);
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_EXPORT)
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.headers['content-type']).toBe('text/csv; charset=utf-8');
       expect(response.headers['content-disposition']).toMatch(/attachment; filename="canvassing-data-\d{4}-\d{2}-\d{2}\.csv"/);
@@ -276,18 +254,18 @@ describe('People API', () => {
       expect(lines[0]).toBe('ID,First Name,Last Name,Email,Notes,Created At,Updated At');
       
       // Check first data row
-      expect(lines[1]).toBe('1,John,Doe,john@example.com,Great conversation about policy,2023-01-01T00:00:00.000Z,2023-01-01T00:00:00.000Z');
+      expect(lines[1]).toBe('1,John,Doe,john@example.com,Great conversation about policy,2024-01-01T00:00:00.000Z,2024-01-01T00:00:00.000Z');
       
       // Check second data row (with escaped quotes and empty email)
-      expect(lines[2]).toBe('2,Jane,Smith,,"Interested in volunteering, has ""special"" needs",2023-01-02T00:00:00.000Z,2023-01-02T00:00:00.000Z');
+      expect(lines[2]).toBe('2,Jane,Smith,,"Interested in volunteering, has ""special"" needs",2024-01-02T00:00:00.000Z,2024-01-02T00:00:00.000Z');
     });
 
     it('should handle empty data', async () => {
       mockPeopleService.getAllPeople.mockResolvedValueOnce([]);
 
       const response = await request(app)
-        .get('/api/people/export/csv')
-        .expect(200);
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_EXPORT)
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       const csvContent = response.text;
       expect(csvContent).toBe('ID,First Name,Last Name,Email,Notes,Created At,Updated At\n');
@@ -296,30 +274,22 @@ describe('People API', () => {
 
   describe('GET /api/people/search', () => {
     it('should return paginated search results', async () => {
-      const mockSearchResults = {
-        data: [
-          {
-            id: 1,
-            first_name: 'John',
-            last_name: 'Doe',
-            email: 'john@example.com',
-            notes: 'Discussed policy details',
-            created_at: '2023-01-01T00:00:00.000Z',
-            updated_at: '2023-01-01T00:00:00.000Z'
-          }
-        ],
-        total: 1,
-        page: 1,
-        limit: 10,
-        totalPages: 1
-      };
+      const mockSearchResults = createMockSearchResult({
+        data: [createMockPerson({
+          id: 1,
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          notes: 'Discussed policy details'
+        })]
+      });
 
       mockPeopleService.searchPeople.mockResolvedValueOnce(mockSearchResults);
 
       const response = await request(app)
-        .get('/api/people/search')
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_SEARCH)
         .query({ query: 'policy', page: 1, limit: 10 })
-        .expect(200);
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,
@@ -328,20 +298,20 @@ describe('People API', () => {
     });
 
     it('should handle search with invalid pagination gracefully', async () => {
-      const mockSearchResults = {
+      const mockSearchResults = createMockSearchResult({
         data: [],
         total: 0,
         page: 1,    // Service corrects invalid page 0 to 1
         limit: 100, // Service corrects invalid limit 200 to 100
         totalPages: 0
-      };
+      });
 
       mockPeopleService.searchPeople.mockResolvedValueOnce(mockSearchResults);
 
       const response = await request(app)
-        .get('/api/people/search')
+        .get(TEST_CONSTANTS.ENDPOINTS.PEOPLE_SEARCH)
         .query({ page: 0, limit: 200 })
-        .expect(200);
+        .expect(TEST_CONSTANTS.STATUS.OK);
 
       expect(response.body).toEqual({
         success: true,

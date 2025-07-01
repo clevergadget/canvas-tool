@@ -10,7 +10,7 @@ A minimal canvassing web app for Empower's take-home assignment.
 ## Project Structure
 - `./frontend` — Vite React app (mobile-friendly, Chakra UI, minimal boilerplate)
 - `./backend` — Node.js Express API (TypeScript, minimal, with health check)
-- `./database` — SQL schema, migration scripts, and DB docs
+- `./database` — SQL schema, migration script
 
 ## Running Locally
 
@@ -76,7 +76,7 @@ Connect to MySQL shell:
 docker exec -it canvas-tool-db-1 mysql -u canvasser -pcanvasserpass canvassing
 ```
 
-Seed the database with sample data:
+ReSeed the database with sample data (if for some reason you want many more records?):
 ```bash
 docker exec -it canvas-tool-db-1 sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
 ```
