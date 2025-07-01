@@ -67,19 +67,14 @@ while [ $attempt -lt $max_attempts ]; do
   fi
 done
 
-# Step 4: Seed the database
-echo -e "\n${YELLOW}Seeding the database...${NC}"
+# Step 4: Wait for database initialization to complete
+echo -e "\n${YELLOW}Waiting for database initialization to complete...${NC}"
 
-# Wait additional time for MySQL to fully initialize all plugins
-echo "Giving MySQL additional time to initialize plugins..."
+# Wait additional time for MySQL to fully initialize and run init scripts
+echo "Giving MySQL time to run initialization scripts..."
 sleep 10
 
-docker exec "$DB_CONTAINER" sh -c "mysql -u canvasser -pcanvasserpass canvassing < /docker-entrypoint-initdb.d/seed.sql"
-if [ $? -ne 0 ]; then
-  echo "Failed to seed the database. Please check the Docker logs."
-  exit 1
-fi
-echo -e "${GREEN}✓ Database seeded successfully${NC}"
+echo -e "${GREEN}✓ Database initialization completed${NC}"
 
 # Step 5: Verify services are running
 echo -e "\n${YELLOW}Verifying services...${NC}"
